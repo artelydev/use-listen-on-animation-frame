@@ -1,0 +1,10 @@
+{
+  "name": "use-listen-on-animation-frame",
+  "version": "1.0.0",
+  "description": "Listen to any function at extreme frequency",
+  "main": "index.js",
+  "repository": "git@github.com:artelydev/use-listen-on-animation-frame.git",
+  "author": "Yaroslav Kasperovych <ilovewindows96@gmail.com>",
+  "license": "MIT",
+  "private": false
+}
