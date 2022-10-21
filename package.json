@@ -29,7 +29,7 @@
     "package.json"
   ],
   "scripts": {
-    "test": "jest --runInBand",
+    "test": "jest --runInBand --passWithNoTests",
     "build": "tsc",
     "dev": "tsc --watch",
     "lint": "eslint .",
