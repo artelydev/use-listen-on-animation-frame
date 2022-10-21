@@ -2,9 +2,9 @@ name: Main
 
 on:
   push:
-    branches: [master, develop]
+    branches: [main]
   pull_request:
-    branches: [master, develop]
+    branches: [main]
 
 jobs:
   build:
@@ -22,5 +22,5 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - run: yarn install --frozen-lockfile
       - run: yarn build --if-present
-      - run: yarn run lint
-      - run: yarn run test
+      - run: yarn lint
+      - run: yarn test
