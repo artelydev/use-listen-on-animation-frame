@@ -1,8 +1,6 @@
 name: Main
 
 on:
-  push:
-    branches: [main]
   pull_request:
     branches: [main]
 
@@ -20,7 +18,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-      - run: yarn install --frozen-lockfile
-      - run: yarn build --if-present
-      - run: yarn lint
-      - run: yarn test
+      - run: npm ci
+      - run: npm run build
+      - run: npm run lint
+      - run: npm run test
