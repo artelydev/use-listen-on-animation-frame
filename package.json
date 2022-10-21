@@ -2,9 +2,65 @@
   "name": "use-listen-on-animation-frame",
   "version": "1.0.0",
   "description": "Listen to any function at extreme frequency",
-  "main": "index.js",
-  "repository": "git@github.com:artelydev/use-listen-on-animation-frame.git",
   "author": "Yaroslav Kasperovych <ilovewindows96@gmail.com>",
   "license": "MIT",
-  "private": false
+  "private": false,
+  "homepage": "https://github.com/artelydev/use-listen-on-animation-frame#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/artelydev/use-listen-on-animation-frame"
+  },
+  "bugs": {
+    "url": "https://github.com/artelydev/use-listen-on-animation-frame/issues"
+  },
+  "keywords": [
+    "animation frame listener",
+    "track function on every animation frame",
+    "interval listen function"
+  ],
+  "main": "dist/index.js",
+  "types": "dist/types.d.ts",
+  "sideEffects": false,
+  "files": [
+    "dist/*",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG*",
+    "package.json"
+  ],
+  "scripts": {
+    "test": "jest --runInBand",
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "lint": "eslint .",
+    "commit": "git-cz"
+  },
+  "lint-staged": {
+    "*.{js,ts,md}": [
+      "prettier --write && yarn lint"
+    ]
+  },
+  "config": {
+    "commitizen": {
+      "path": "@commitlint/prompt"
+    }
+  },
+  "devDependencies": {
+    "@commitlint/config-conventional": "17.1.0",
+    "@commitlint/prompt": "17.1.2",
+    "@testing-library/react": "13.4.0",
+    "@types/jest": "29.2.0",
+    "@types/react": "18.0.21",
+    "commitizen": "4.2.5",
+    "eslint": "8.25.0",
+    "eslint-config-airbnb-typescript-prettier": "5.0.0",
+    "husky": "8.0.1",
+    "jest": "29.2.1",
+    "prettier": "2.7.1",
+    "typescript": "4.8.4"
+  },
+  "dependencies": {
+    "react": "18.2.0",
+    "react-dom": "18.2.0"
+  }
 }
