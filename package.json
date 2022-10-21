@@ -37,7 +37,7 @@
   },
   "lint-staged": {
     "*.{js,ts,md}": [
-      "prettier --write && yarn lint"
+      "prettier --write && npm run lint"
     ]
   },
   "config": {
