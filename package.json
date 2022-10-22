@@ -18,8 +18,16 @@
     "track function on every animation frame",
     "interval listen function"
   ],
-  "main": "dist/index.js",
-  "types": "dist/types.d.ts",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/types.d.ts",
+  "exports": {
+    ".": {
+      "require": "./dist/index.js",
+      "import": "./dist/index.mjs",
+      "types": "./dist/index.d.ts"
+    }
+  },
   "sideEffects": false,
   "files": [
     "dist/*",
@@ -30,10 +38,11 @@
   ],
   "scripts": {
     "test": "jest --runInBand --passWithNoTests",
-    "build": "tsc",
-    "dev": "tsc --watch",
+    "build": "tsup src/index.ts --format cjs,esm --dts --clean",
+    "dev": "npm run build -- --watch src",
     "lint": "eslint .",
-    "commit": "git-cz"
+    "commit": "git-cz",
+    "prepublishOnly": "npm run build"
   },
   "lint-staged": {
     "*.{js,ts,md}": [
@@ -70,7 +79,7 @@
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "semantic-release": "19.0.5",
+    "tsup": "^6.3.0",
     "typescript": "4.8.4"
-  },
-  "dependencies": {}
+  }
 }
