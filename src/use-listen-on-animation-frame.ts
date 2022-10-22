@@ -1,15 +1,12 @@
 import { useCallback, useEffect, useRef } from "react";
 import {
-  AnimationFrameListenersTree,
   TrackedFn,
   ShouldInvokeListenersFn,
   RemoveAnimationFrameListener,
   AddAnimationFrameListener,
   UseListenOnAnimationFrameReturn,
 } from "./types";
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const animationFrameListenersTree: AnimationFrameListenersTree<any> = {};
+import { animationFrameListenersTree } from "./animation-frame-listeners-tree";
 
 let animationFrameId: number;
 
@@ -50,7 +47,7 @@ const startRequestAnimationFrameLoop = () => {
  * @export
  * @template TrackedFnReturn - return of a tracked function
  * @param {TrackedFn<TrackedFnReturn>} trackedFn - function to be listened to on every animation frame
- * @param {ShouldInvokeListenersFn} shouldInvokeListenersFn - function returning bool determining if there is a need to invoke listeners
+ * @param {ShouldInvokeListenersFn} shouldInvokeListenersFn - function returning bool determining if there is a need to invoke listeners. By default, listeners will only be executed if tracked function return has changed.
  * @return {UseListenOnAnimationFrameReturn} - [add, remove] tracked fn listeners
  */
 export function useListenOnAnimationFrame<TrackedFnReturn>(
