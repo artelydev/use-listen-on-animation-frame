@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/artelydev/use-listen-on-animation-frame/compare/v1.0.0...v1.1.0) (2022-10-22)
+
+
+### Features
+
+* **esm:** provide esm module ([137bd2b](https://github.com/artelydev/use-listen-on-animation-frame/commit/137bd2bffd7a42b14cccc7437577553acea7b63e))
+
 # 1.0.0 (2022-10-22)
 
 
