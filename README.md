@@ -106,6 +106,8 @@ const EveningHoursIndicator: React.FC = () => {
 };
 ```
 
+## :gear: Advanced usage
+
 ### Access previous animation frame function return
 
 If you for some reason need previous animation frame return of your function - it is easily possible.
@@ -149,8 +151,6 @@ const MilisecondsElapsedFrom1970: React.FC = () => {
   );
 };
 ```
-
-## :gear: Advanced usage
 
 ### Start and stop tracking your function
 
