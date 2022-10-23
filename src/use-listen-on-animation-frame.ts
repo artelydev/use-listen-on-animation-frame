@@ -7,6 +7,7 @@ import {
   UseListenOnAnimationFrameReturn,
 } from "./types";
 import { animationFrameListenersTree } from "./animation-frame-listeners-tree";
+import { generateListenerId, generateListenerTreeId } from "./generate-id";
 
 let animationFrameId: number;
 
@@ -54,9 +55,7 @@ export function useListenOnAnimationFrame<TrackedFnReturn>(
   trackedFn: TrackedFn<TrackedFnReturn>,
   shouldInvokeListenersFn?: ShouldInvokeListenersFn<TrackedFnReturn>
 ): UseListenOnAnimationFrameReturn<TrackedFnReturn> {
-  const treeIdRef = useRef<string>(
-    Object.keys(animationFrameListenersTree).length.toString()
-  );
+  const treeIdRef = useRef<string>(generateListenerTreeId());
 
   const previousValueRef = useRef<TrackedFnReturn>();
 
@@ -103,9 +102,11 @@ export function useListenOnAnimationFrame<TrackedFnReturn>(
 
   const addAnimationFrameListener: AddAnimationFrameListener<TrackedFnReturn> =
     useCallback((listener) => {
-      const listenerId = Object.keys(
-        animationFrameListenersTree[treeIdRef.current].listeners
-      ).length.toString();
+      if (!animationFrameListenersTree[treeIdRef.current]) {
+        throw new Error("Cannot set a listener on non-existent tree");
+      }
+
+      const listenerId = generateListenerId(treeIdRef.current);
 
       animationFrameListenersTree[treeIdRef.current].listeners[listenerId] =
         listener;
@@ -115,9 +116,11 @@ export function useListenOnAnimationFrame<TrackedFnReturn>(
 
   const removeAnimationFrameListener: RemoveAnimationFrameListener =
     useCallback((listenerId) => {
-      delete animationFrameListenersTree[treeIdRef.current].listeners[
-        listenerId
-      ];
+      if (animationFrameListenersTree[treeIdRef.current]) {
+        delete animationFrameListenersTree[treeIdRef.current].listeners[
+          listenerId
+        ];
+      }
     }, []);
 
   return [addAnimationFrameListener, removeAnimationFrameListener];
