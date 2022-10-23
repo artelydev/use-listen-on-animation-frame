@@ -29,6 +29,10 @@
 
 `setInterval` but extremely frequent & performant.
 
+#### Animation frame counter
+
+[Try it on codesandbox](https://codesandbox.io/s/animation-frame-counter-00pfwo)
+
 ```typescript
 import React, { useCallback, useState } from "react";
 import { useListenOnAnimationFrame } from "use-listen-on-animation-frame";
@@ -43,7 +47,78 @@ const AnimationFrameCounter: React.FC = () => {
 
   useListenOnAnimationFrame(handleNewAnimationFrame);
 
-  return <div>{animationFramesCounter}</div>;
+  return <div>Browser animation frames painted: {animationFramesCounter}</div>;
+};
+```
+
+#### Video & timer
+
+[Try it on codesandbox](https://codesandbox.io/s/player-current-time-g6zqgl)
+
+```typescript
+import React, { useCallback, useEffect, useState, useRef } from "react";
+import { useListenOnAnimationFrame } from "use-listen-on-animation-frame";
+
+const VideoWithCurrentTime: React.FC = () => {
+  const [videoCurrentTime, setVideoCurrentTime] = useState<number>(0);
+  const [timeupdateCurrentTime, setTimeupdateCurrentTime] = useState<number>(0);
+
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+
+  const setVideoRef = useCallback((videoElement: HTMLVideoElement | null) => {
+    const onTimeupdate = () => {
+      setTimeupdateCurrentTime(videoRef.current!.currentTime);
+    };
+
+    if (videoElement) {
+      videoRef.current = videoElement;
+
+      videoElement.addEventListener("timeupdate", onTimeupdate);
+    } else {
+      videoRef.current?.removeEventListener("timeupdate", onTimeupdate);
+      videoRef.current = null;
+    }
+  }, []);
+
+  /* better memoized */
+  const getVideoTime = useCallback(() => {
+    if (videoRef.current) {
+      return videoRef.current.currentTime;
+    }
+  }, []);
+
+  const [addListener, removeListener] = useListenOnAnimationFrame(getVideoTime);
+
+  useEffect(() => {
+    const listenerId = addListener((currentTime) => {
+      setVideoCurrentTime(currentTime);
+    });
+
+    return () => {
+      removeListener(listenerId);
+    };
+  }, [addListener, removeListener]);
+
+  return (
+    <>
+      <h1>Player with timers</h1>
+      <video
+        controls
+        src="https://www.w3schools.com/html/mov_bbb.mp4"
+        ref={setVideoRef}
+      />
+      <p>
+        Actual video time is:{" "}
+        <span style={{ color: "green" }}>{videoCurrentTime}</span>
+      </p>
+      <p>
+        What HTML5 Video timeupdate reports:{" "}
+        <span style={{ color: "red" }}>{timeupdateCurrentTime}</span>
+      </p>
+
+      <h3>How would you build your UI with that?</h3>
+    </>
+  );
 };
 ```
 
@@ -51,7 +126,11 @@ const AnimationFrameCounter: React.FC = () => {
 
 If you need to track your function return on every animation frame and do something with it - go for it!
 
+[Try it on codesandbox](https://codesandbox.io/s/evening-hours-indicator-pwp3wv)
+
 ```typescript
+import "./styles.css";
+
 import React, { useCallback, useEffect, useState } from "react";
 import { useListenOnAnimationFrame } from "use-listen-on-animation-frame";
 
@@ -69,7 +148,7 @@ const EveningHoursIndicator: React.FC = () => {
      * invoked if return value of tracked
      * function has changed between frames
      */
-    return new Date().getTime();
+    return new Date().getHours();
   }, []);
 
   const [addListener, removeListener] = useListenOnAnimationFrame(getHours);
@@ -112,8 +191,10 @@ const EveningHoursIndicator: React.FC = () => {
 
 If you for some reason need previous animation frame return of your function - it is easily possible.
 
+[Try it on codesandbox](https://codesandbox.io/s/ms-elapsed-from-1970-pwgpft)
+
 ```typescript
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useListenOnAnimationFrame } from "use-listen-on-animation-frame";
 
 const getMsElapsedFrom1970 = () => {
@@ -156,11 +237,10 @@ const MilisecondsElapsedFrom1970: React.FC = () => {
 
 You can stop and start tracking again whenever you want.
 
-<em>Btw, compare the following with `setInterval`. You couldn't achieve same smoothness.</em>
+[Try it on codesandbox](https://codesandbox.io/s/controllable-timer-292wmz)
 
 ```typescript
-// extremely-precise-clock.tsx
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useListenOnAnimationFrame } from "use-listen-on-animation-frame";
 
 const formatDate = (date: Date) => {
@@ -171,16 +251,11 @@ const getDate = () => {
   return new Date();
 };
 
-type ExtremelyPreciseClockProps = {
-  isTicking: boolean;
-};
-
-export const ExtremelyPreciseClock: React.FC<ExtremelyPreciseClockProps> = ({
-  isTicking,
-}) => {
+export const ExtremelySmoothTimer: React.FC = () => {
   const [currentTime, setCurrentTime] = useState<string>(
     formatDate(new Date())
   );
+  const [isTicking, setIsTicking] = useState(true);
 
   const [addListener, removeListener, stop, start] = useListenOnAnimationFrame(
     getDate,
@@ -213,30 +288,41 @@ export const ExtremelyPreciseClock: React.FC<ExtremelyPreciseClockProps> = ({
     }
   }, [isTicking, start, stop]);
 
-  return <div>{currentTime}</div>;
-};
-```
-
-```typescript
-// index.tsx
-
-import { ExtremelyPreciseClock } from "./extremely-precise-clock";
-
-const Component: React.FC = () => {
-  const isClockTicking = determineIfClockIsticking();
-
   return (
     <>
-      {/* ... */}
-      <ExtremelyPreciseClock isTicking={isClockTicking} />
+      <div>Smooth timer: {currentTime}</div>
+      <div>
+        {!isTicking && (
+          <button
+            onClick={() => {
+              setIsTicking(true);
+            }}
+          >
+            Start timer
+          </button>
+        )}
+        {isTicking && (
+          <button
+            onClick={() => {
+              setIsTicking(false);
+            }}
+          >
+            Stop timer
+          </button>
+        )}
+      </div>
     </>
   );
 };
 ```
 
+<em>[Btw, compare the above performance with `setInterval`. You couldn't achieve same smoothness when event loop is busy](https://codesandbox.io/s/interval-vs-animation-frame-065es8)</em>
+
 ### Optimize/Unoptimize your listeners
 
 By default, if you don't provide `shouldInvokeListeners` option - listeners will be invoked only if tracked function return changes. It means that a supplied function will still be invoked on every animation frame, but listeners will not.
+
+[Try it on codesandbox](https://codesandbox.io/s/player-timer-heavy-load-yqz79q)
 
 ```typescript
 import React, { useCallback, useEffect, useState, useRef } from "react";
@@ -250,10 +336,10 @@ const conditionallyInvokeListeners = (
 
   /**
    * invoke only if current animation
-   * frame current time is less than 1
-   * second OR bigger than 2 seconds
+   * frame current time is bigger than 2
+   * second AND lesser than 3 seconds
    */
-  return nextValue < 1 || nextValue > 2;
+  return nextValue > 2 && nextValue < 3;
 };
 
 const alwaysInvokeListeners = () => {
@@ -267,14 +353,12 @@ const alwaysInvokeListeners = () => {
 
 const VideoWithCurrentTime: React.FC = () => {
   const [videoCurrentTime, setVideoCurrentTime] = useState<number>(0);
-  const videoRef = useRef<HTMLVideoElement>();
-
-  const animationFrames;
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   /* better memoized */
   const getVideoTime = useCallback(() => {
     if (videoRef.current) {
-      return videoRef.current.currentTime();
+      return videoRef.current.currentTime;
     }
   }, []);
 
@@ -301,9 +385,14 @@ const VideoWithCurrentTime: React.FC = () => {
   useEffect(() => {
     const optimizedListenerId = addOptimizedListener(() => {
       /**
-       * do something heavy only when video current time
-       * is less than 1 second or bigger than 2 seconds
+       * does something heavy only when video current time
+       * is between 1 and 2 seconds
        */
+      for (let i = 0; i < 1000; i++) {
+        console.log(":)");
+      }
+
+      console.clear();
     });
 
     return () => {
@@ -313,7 +402,12 @@ const VideoWithCurrentTime: React.FC = () => {
 
   return (
     <>
-      <video ref={videoRef} />
+      <h1>Player with timer & heavy load between 2 and 3s</h1>
+      <video
+        controls
+        src="https://www.w3schools.com/html/mov_bbb.mp4"
+        ref={videoRef}
+      />
       <p>Video time is: {videoCurrentTime}</p>
     </>
   );
