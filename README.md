@@ -167,11 +167,13 @@ const formatDate = (date: Date) => {
   return `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}.${date.getMilliseconds()}`;
 };
 
-type ExtremelyPreciseClock = {
+type ExtremelyPreciseClockProps = {
   isTicking: boolean;
 };
 
-export const ExtremelyPreciseClock: React.FC<ClockProps> = ({ isTicking }) => {
+export const ExtremelyPreciseClock: React.FC<ExtremelyPreciseClockProps> = ({
+  isTicking,
+}) => {
   const [currentTime, setCurrentTime] = useState<string>(
     formatDate(new Date())
   );
