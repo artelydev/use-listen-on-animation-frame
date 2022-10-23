@@ -27,17 +27,24 @@ const startRequestAnimationFrameLoop = () => {
   );
 
   if (requestAnimationFrameLooping) {
-    Object.values(animationFrameListenersTree).forEach(
-      ({ listeners, shouldInvokeListeners, trackedFn }) => {
+    Object.entries(animationFrameListenersTree).forEach(
+      ([
+        treeId,
+        { listeners, shouldInvokeListeners, trackedFn, previousValue },
+      ]) => {
         const trackedFnValue = trackedFn();
 
-        if (!shouldInvokeListeners(trackedFnValue)) {
+        if (!shouldInvokeListeners(trackedFnValue, previousValue)) {
+          animationFrameListenersTree[treeId].previousValue = trackedFnValue;
+
           return;
         }
 
         Object.values(listeners).forEach((listener) => {
-          listener(trackedFnValue);
+          listener(trackedFnValue, previousValue);
         });
+
+        animationFrameListenersTree[treeId].previousValue = trackedFnValue;
       }
     );
   }
@@ -59,8 +66,6 @@ export function useListenOnAnimationFrame<TrackedFnReturn>(
 ): UseListenOnAnimationFrameReturn<TrackedFnReturn> {
   const treeIdRef = useRef<string>(generateListenerTreeId());
 
-  const previousValueRef = useRef<TrackedFnReturn>();
-
   useEffect(() => {
     const treeId = treeIdRef.current;
 
@@ -68,15 +73,10 @@ export function useListenOnAnimationFrame<TrackedFnReturn>(
     animationFrameListenersTree[treeId] = {
       listeners: {},
       trackedFn: () => null,
-      shouldInvokeListeners: (nextValue: TrackedFnReturn) => {
-        if (nextValue !== previousValueRef.current) {
-          previousValueRef.current = nextValue;
-
-          return true;
-        }
-
-        return false;
-      },
+      shouldInvokeListeners: (
+        nextValue: TrackedFnReturn,
+        previousValue?: TrackedFnReturn
+      ) => nextValue !== previousValue,
     };
 
     if (!requestAnimationFrameLooping) {

@@ -1,11 +1,13 @@
 export type AnimationFrameListener<AnimationFrameListenerArg> = (
-  arg: AnimationFrameListenerArg
+  value: AnimationFrameListenerArg,
+  previousValue?: AnimationFrameListenerArg
 ) => void;
 
 export type TrackedFn<TrackedFnReturn> = () => TrackedFnReturn;
 
 export type ShouldInvokeListenersFn<TrackedFnReturn> = (
-  nextReturn: TrackedFnReturn
+  nextValue: TrackedFnReturn,
+  previousValue?: TrackedFnReturn
 ) => boolean;
 
 export type AnimationFrameListenersSubtree<TrackedFnReturn> = {
@@ -17,11 +19,12 @@ export type AnimationFrameListenersTree<TrackedFnReturn> = {
     shouldInvokeListeners: ShouldInvokeListenersFn<TrackedFnReturn>;
     trackedFn: TrackedFn<TrackedFnReturn>;
     listeners: AnimationFrameListenersSubtree<TrackedFnReturn>;
+    previousValue?: TrackedFnReturn;
   };
 };
 
 export type AddAnimationFrameListener<AnimationFrameListenerArg> = (
-  listener: (trackedValue: AnimationFrameListenerArg) => void
+  listener: AnimationFrameListener<AnimationFrameListenerArg>
 ) => string;
 
 export type RemoveAnimationFrameListener = (listenerId: string) => void;
