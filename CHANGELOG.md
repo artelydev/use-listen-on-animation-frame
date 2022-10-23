@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/artelydev/use-listen-on-animation-frame/compare/v1.1.1...v1.2.0) (2022-10-23)
+
+
+### Features
+
+* **should-invoke:** provide previous value ([40469a5](https://github.com/artelydev/use-listen-on-animation-frame/commit/40469a52bf8ed0557890097c828f5892bbd6acd5))
+
 ## [1.1.1](https://github.com/artelydev/use-listen-on-animation-frame/compare/v1.1.0...v1.1.1) (2022-10-23)
 
 
