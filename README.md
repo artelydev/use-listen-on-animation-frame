@@ -99,12 +99,8 @@ const EveningHoursIndicator: React.FC = () => {
 
   return (
     <>
-      <p>
-        {reached8PM ? "its finally 8 PM" : "its not yet 8 PM"}
-      </p>
-      <p>
-        {reached9PM ? 'its finally 9 PM : 'its not yet 9 PM'}
-      </p>
+      <p>{reached8PM ? "its finally 8 PM" : "its not yet 8 PM"}</p>
+      <p>{reached9PM ? "its finally 9 PM" : "its not yet 9 PM"}</p>
     </>
   );
 };
