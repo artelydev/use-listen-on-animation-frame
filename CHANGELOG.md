@@ -1,3 +1,10 @@
+## [1.1.1](https://github.com/artelydev/use-listen-on-animation-frame/compare/v1.1.0...v1.1.1) (2022-10-23)
+
+
+### Bug Fixes
+
+* **id:** provide unique uuid generation ([cbd34ee](https://github.com/artelydev/use-listen-on-animation-frame/commit/cbd34ee6667564e16d87cadbdf624ba439860ca9))
+
 # [1.1.0](https://github.com/artelydev/use-listen-on-animation-frame/compare/v1.0.0...v1.1.0) (2022-10-22)
 
 
