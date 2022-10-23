@@ -167,6 +167,10 @@ const formatDate = (date: Date) => {
   return `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}.${date.getMilliseconds()}`;
 };
 
+const getDate = () => {
+  return new Date();
+};
+
 type ExtremelyPreciseClockProps = {
   isTicking: boolean;
 };
@@ -178,15 +182,11 @@ export const ExtremelyPreciseClock: React.FC<ExtremelyPreciseClockProps> = ({
     formatDate(new Date())
   );
 
-  const trackTime = useCallback(() => {
-    return new Date();
-  }, []);
-
   const [addListener, removeListener, stop, start] = useListenOnAnimationFrame(
-    trackTime,
+    getDate,
     {
       /**
-       * optionally indicate that the trackTime function and
+       * optionally indicate that the getDate function and
        * listeners should not be invoked until you `start()`
        */
       autoStart: false,
@@ -205,10 +205,10 @@ export const ExtremelyPreciseClock: React.FC<ExtremelyPreciseClockProps> = ({
 
   useEffect(() => {
     if (isTicking) {
-      /* start tracking trackTime & listeners */
+      /* start tracking getDate & listeners */
       start();
     } else {
-      /* stop tracking trackTime & listeners */
+      /* stop tracking getDate & listeners */
       stop();
     }
   }, [isTicking, start, stop]);
@@ -272,19 +272,19 @@ const VideoWithCurrentTime: React.FC = () => {
   const animationFrames;
 
   /* better memoized */
-  const trackVideoTime = useCallback(() => {
+  const getVideoTime = useCallback(() => {
     if (videoRef.current) {
       return videoRef.current.currentTime();
     }
   }, []);
 
   const [addOptimizedListener, removeOptimizedListener] =
-    useListenOnAnimationFrame(trackVideoTime, {
+    useListenOnAnimationFrame(getVideoTime, {
       shouldInvokeListeners: conditionallyInvokeListeners,
     });
 
   const [addNotOptimizedListener, removeNotOptimizedListener] =
-    useListenOnAnimationFrame(trackVideoTime, {
+    useListenOnAnimationFrame(getVideoTime, {
       shouldInvokeListeners: alwaysInvokeListeners,
     });
 
