@@ -1,3 +1,10 @@
+# [1.3.0](https://github.com/artelydev/use-listen-on-animation-frame/compare/v1.2.0...v1.3.0) (2022-10-23)
+
+
+### Features
+
+* **hook:** start, stop, autostart ([78e0431](https://github.com/artelydev/use-listen-on-animation-frame/commit/78e0431bc09233a85d516f53a38493ceefaf626f))
+
 # [1.2.0](https://github.com/artelydev/use-listen-on-animation-frame/compare/v1.1.1...v1.2.0) (2022-10-23)
 
 
