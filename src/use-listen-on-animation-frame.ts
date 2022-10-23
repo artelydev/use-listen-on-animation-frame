@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useRef } from "react";
 import {
   TrackedFn,
-  ShouldInvokeListenersFn,
   RemoveAnimationFrameListener,
   AddAnimationFrameListener,
   UseListenOnAnimationFrameReturn,
+  StopFn,
+  StartFn,
+  UseListenOnAnimationFrameOptions,
 } from "./types";
 import { animationFrameListenersTree } from "./animation-frame-listeners-tree";
 import { generateListenerId, generateListenerTreeId } from "./generate-id";
@@ -30,8 +32,12 @@ const startRequestAnimationFrameLoop = () => {
     Object.entries(animationFrameListenersTree).forEach(
       ([
         treeId,
-        { listeners, shouldInvokeListeners, trackedFn, previousValue },
+        { running, listeners, shouldInvokeListeners, trackedFn, previousValue },
       ]) => {
+        if (!running) {
+          return;
+        }
+
         const trackedFnValue = trackedFn();
 
         if (!shouldInvokeListeners(trackedFnValue, previousValue)) {
@@ -50,6 +56,11 @@ const startRequestAnimationFrameLoop = () => {
   }
 };
 
+export const DEFAULT_USE_LISTEN_ON_ANIMATION_OPTIONS = {
+  autoStart: true,
+  shouldInvokeListeners: undefined,
+};
+
 /**
  * Hook that invokes a give function on every animation frame
  * And invokes existing listeners to it's return
@@ -62,9 +73,15 @@ const startRequestAnimationFrameLoop = () => {
  */
 export function useListenOnAnimationFrame<TrackedFnReturn>(
   trackedFn: TrackedFn<TrackedFnReturn>,
-  shouldInvokeListenersFn?: ShouldInvokeListenersFn<TrackedFnReturn>
+  {
+    shouldInvokeListeners = DEFAULT_USE_LISTEN_ON_ANIMATION_OPTIONS.shouldInvokeListeners,
+    /** Whether to start tracking when using hook or not */
+    autoStart = DEFAULT_USE_LISTEN_ON_ANIMATION_OPTIONS.autoStart,
+  }: UseListenOnAnimationFrameOptions<TrackedFnReturn> = DEFAULT_USE_LISTEN_ON_ANIMATION_OPTIONS
 ): UseListenOnAnimationFrameReturn<TrackedFnReturn> {
   const treeIdRef = useRef<string>(generateListenerTreeId());
+
+  const autoStartRef = useRef<boolean>(autoStart);
 
   useEffect(() => {
     const treeId = treeIdRef.current;
@@ -73,6 +90,7 @@ export function useListenOnAnimationFrame<TrackedFnReturn>(
     animationFrameListenersTree[treeId] = {
       listeners: {},
       trackedFn: () => null,
+      running: autoStartRef.current,
       shouldInvokeListeners: (
         nextValue: TrackedFnReturn,
         previousValue?: TrackedFnReturn
@@ -92,11 +110,11 @@ export function useListenOnAnimationFrame<TrackedFnReturn>(
   }, []);
 
   useEffect(() => {
-    if (shouldInvokeListenersFn) {
+    if (shouldInvokeListeners) {
       animationFrameListenersTree[treeIdRef.current].shouldInvokeListeners =
-        shouldInvokeListenersFn;
+        shouldInvokeListeners;
     }
-  }, [shouldInvokeListenersFn]);
+  }, [shouldInvokeListeners]);
 
   useEffect(() => {
     animationFrameListenersTree[treeIdRef.current].trackedFn = trackedFn;
@@ -105,7 +123,9 @@ export function useListenOnAnimationFrame<TrackedFnReturn>(
   const addAnimationFrameListener: AddAnimationFrameListener<TrackedFnReturn> =
     useCallback((listener) => {
       if (!animationFrameListenersTree[treeIdRef.current]) {
-        throw new Error("Cannot set a listener on non-existent tree");
+        throw new Error(
+          "Cannot set a listener on non-existent tree. Make sure that you hasn't stopped tracking"
+        );
       }
 
       const listenerId = generateListenerId(treeIdRef.current);
@@ -125,5 +145,17 @@ export function useListenOnAnimationFrame<TrackedFnReturn>(
       }
     }, []);
 
-  return [addAnimationFrameListener, removeAnimationFrameListener];
+  const stop: StopFn = useCallback(() => {
+    if (animationFrameListenersTree[treeIdRef.current]) {
+      animationFrameListenersTree[treeIdRef.current].running = false;
+    }
+  }, []);
+
+  const start: StartFn = useCallback(() => {
+    if (animationFrameListenersTree[treeIdRef.current]) {
+      animationFrameListenersTree[treeIdRef.current].running = true;
+    }
+  }, []);
+
+  return [addAnimationFrameListener, removeAnimationFrameListener, stop, start];
 }

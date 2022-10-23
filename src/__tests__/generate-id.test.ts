@@ -13,6 +13,7 @@ animationFrameListenersTree[DUPLICATE_UUID] = {
       // do nothing
     },
   },
+  running: true,
 };
 
 jest.mock("uuid", () => {

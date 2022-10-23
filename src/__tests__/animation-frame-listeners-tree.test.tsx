@@ -68,6 +68,7 @@ describe("animation frame listeners tree", () => {
         shouldInvokeListeners: expect.any(Function),
         listeners: {},
         trackedFn: listenFn,
+        running: true,
       });
 
       rerender(<TestComponent shouldAddListener />);
@@ -78,6 +79,7 @@ describe("animation frame listeners tree", () => {
           [getListenerId(0, 0)]: listener,
         },
         trackedFn: listenFn,
+        running: true,
       });
 
       rerender(<TestComponent shouldRemoveListener />);
@@ -86,6 +88,7 @@ describe("animation frame listeners tree", () => {
         shouldInvokeListeners: expect.any(Function),
         listeners: {},
         trackedFn: listenFn,
+        running: true,
       });
     });
 
@@ -193,18 +196,21 @@ describe("animation frame listeners tree", () => {
         shouldInvokeListeners: expect.any(Function),
         listeners: {},
         trackedFn: listenFn1,
+        running: true,
       });
 
       expect(animationFrameListenersTree[getTreeId(1)]).toEqual({
         shouldInvokeListeners: expect.any(Function),
         listeners: {},
         trackedFn: listenFn2,
+        running: true,
       });
 
       expect(animationFrameListenersTree[getTreeId(2)]).toEqual({
         shouldInvokeListeners: expect.any(Function),
         listeners: {},
         trackedFn: listenFn3,
+        running: true,
       });
 
       rerender(<TestComponent addListenerNumber={1} />);
@@ -215,18 +221,21 @@ describe("animation frame listeners tree", () => {
           [getListenerId(0, 0)]: listener1,
         },
         trackedFn: listenFn1,
+        running: true,
       });
 
       expect(animationFrameListenersTree[getTreeId(1)]).toEqual({
         shouldInvokeListeners: expect.any(Function),
         listeners: {},
         trackedFn: listenFn2,
+        running: true,
       });
 
       expect(animationFrameListenersTree[getTreeId(2)]).toEqual({
         shouldInvokeListeners: expect.any(Function),
         listeners: {},
         trackedFn: listenFn3,
+        running: true,
       });
 
       rerender(<TestComponent addListenerNumber={2} />);
@@ -238,6 +247,7 @@ describe("animation frame listeners tree", () => {
           [getListenerId(0, 0)]: listener1,
         },
         trackedFn: listenFn1,
+        running: true,
       });
 
       expect(animationFrameListenersTree[getTreeId(1)]).toEqual({
@@ -246,6 +256,7 @@ describe("animation frame listeners tree", () => {
           [getListenerId(1, 0)]: listener2,
         },
         trackedFn: listenFn2,
+        running: true,
       });
 
       expect(animationFrameListenersTree[getTreeId(2)]).toEqual({
@@ -254,6 +265,7 @@ describe("animation frame listeners tree", () => {
           [getListenerId(2, 0)]: listener3,
         },
         trackedFn: listenFn3,
+        running: true,
       });
 
       rerender(<TestComponent removeListenerNumber={2} />);
@@ -264,12 +276,14 @@ describe("animation frame listeners tree", () => {
           [getListenerId(0, 0)]: listener1,
         },
         trackedFn: listenFn1,
+        running: true,
       });
 
       expect(animationFrameListenersTree[getTreeId(1)]).toEqual({
         shouldInvokeListeners: expect.any(Function),
         listeners: {},
         trackedFn: listenFn2,
+        running: true,
       });
 
       expect(animationFrameListenersTree[getTreeId(2)]).toEqual({
@@ -278,6 +292,7 @@ describe("animation frame listeners tree", () => {
           [getListenerId(2, 0)]: listener3,
         },
         trackedFn: listenFn3,
+        running: true,
       });
 
       rerender(<TestComponent removeListenerNumber={1} />);
@@ -287,18 +302,21 @@ describe("animation frame listeners tree", () => {
         shouldInvokeListeners: expect.any(Function),
         listeners: {},
         trackedFn: listenFn1,
+        running: true,
       });
 
       expect(animationFrameListenersTree[getTreeId(1)]).toEqual({
         shouldInvokeListeners: expect.any(Function),
         listeners: {},
         trackedFn: listenFn2,
+        running: true,
       });
 
       expect(animationFrameListenersTree[getTreeId(2)]).toEqual({
         shouldInvokeListeners: expect.any(Function),
         listeners: {},
         trackedFn: listenFn3,
+        running: true,
       });
     });
 
@@ -404,12 +422,14 @@ describe("animation frame listeners tree", () => {
         shouldInvokeListeners: expect.any(Function),
         trackedFn: listenFn1,
         listeners: {},
+        running: true,
       });
 
       expect(animationFrameListenersTree[getTreeId(1)]).toEqual({
         shouldInvokeListeners: expect.any(Function),
         trackedFn: listenFn2,
         listeners: {},
+        running: true,
       });
 
       rerender(
@@ -423,6 +443,7 @@ describe("animation frame listeners tree", () => {
         shouldInvokeListeners: expect.any(Function),
         trackedFn: listenFn1,
         listeners: {},
+        running: true,
       });
 
       expect(animationFrameListenersTree[getTreeId(1)]).toEqual({
@@ -431,6 +452,7 @@ describe("animation frame listeners tree", () => {
         listeners: {
           [getListenerId(1, 0)]: listener2,
         },
+        running: true,
       });
 
       rerender(
@@ -446,6 +468,7 @@ describe("animation frame listeners tree", () => {
         listeners: {
           [getListenerId(0, 0)]: listener1,
         },
+        running: true,
       });
 
       expect(animationFrameListenersTree[getTreeId(1)]).toEqual({
@@ -454,6 +477,7 @@ describe("animation frame listeners tree", () => {
         listeners: {
           [getListenerId(1, 0)]: listener2,
         },
+        running: true,
       });
 
       rerender(
@@ -467,12 +491,14 @@ describe("animation frame listeners tree", () => {
         shouldInvokeListeners: expect.any(Function),
         trackedFn: listenFn1,
         listeners: {},
+        running: true,
       });
 
       expect(animationFrameListenersTree[getTreeId(1)]).toEqual({
         shouldInvokeListeners: expect.any(Function),
         trackedFn: listenFn2,
         listeners: {},
+        running: true,
       });
     });
 
@@ -552,6 +578,7 @@ describe("animation frame listeners tree", () => {
         shouldInvokeListeners: expect.any(Function),
         listeners: {},
         trackedFn: listenFn,
+        running: true,
       });
 
       rerender(<TestComponent shouldAddListenerNumber={1} />);
@@ -562,6 +589,7 @@ describe("animation frame listeners tree", () => {
           [getListenerId(0, 0)]: listener1,
         },
         trackedFn: listenFn,
+        running: true,
       });
 
       rerender(<TestComponent shouldAddListenerNumber={2} />);
@@ -573,6 +601,7 @@ describe("animation frame listeners tree", () => {
           [getListenerId(0, 1)]: listener2,
         },
         trackedFn: listenFn,
+        running: true,
       });
 
       rerender(<TestComponent shouldRemoveListenerNumber={1} />);
@@ -583,6 +612,7 @@ describe("animation frame listeners tree", () => {
           [getListenerId(0, 0)]: listener2,
         },
         trackedFn: listenFn,
+        running: true,
       });
 
       rerender(<TestComponent shouldRemoveListenerNumber={2} />);
@@ -591,6 +621,7 @@ describe("animation frame listeners tree", () => {
         shouldInvokeListeners: expect.any(Function),
         listeners: {},
         trackedFn: listenFn,
+        running: true,
       });
     });
 
@@ -600,6 +631,82 @@ describe("animation frame listeners tree", () => {
       unmount();
 
       expect(Object.keys(animationFrameListenersTree).length).toEqual(0);
+    });
+  });
+
+  describe("when tracking is stopped and started", () => {
+    const listener = () => {
+      // do nothing
+    };
+
+    type TestComponentProps = {
+      shouldStop?: boolean;
+      shouldStart?: boolean;
+    };
+
+    const TestComponent: React.FC<TestComponentProps> = ({
+      shouldStop,
+      shouldStart,
+    }) => {
+      const [addListener, removeListener, stop, start] =
+        useListenOnAnimationFrame(listenFn);
+
+      useEffect(() => {
+        const listenerId = addListener(listener);
+
+        return () => {
+          removeListener(listenerId);
+        };
+      }, [addListener, removeListener]);
+
+      useEffect(() => {
+        if (shouldStop) {
+          stop();
+        }
+      }, [shouldStop, stop]);
+
+      useEffect(() => {
+        if (shouldStart) {
+          start();
+        }
+      }, [shouldStart, start]);
+
+      return null;
+    };
+
+    it("sets running false", () => {
+      const { rerender } = render(<TestComponent />);
+
+      expect(animationFrameListenersTree[getTreeId(0)]).toEqual({
+        shouldInvokeListeners: expect.any(Function),
+        listeners: {
+          [getListenerId(0, 0)]: listener,
+        },
+        trackedFn: listenFn,
+        running: true,
+      });
+
+      rerender(<TestComponent shouldStop />);
+
+      expect(animationFrameListenersTree[getTreeId(0)]).toEqual({
+        shouldInvokeListeners: expect.any(Function),
+        listeners: {
+          [getListenerId(0, 0)]: listener,
+        },
+        trackedFn: listenFn,
+        running: false,
+      });
+
+      rerender(<TestComponent shouldStart />);
+
+      expect(animationFrameListenersTree[getTreeId(0)]).toEqual({
+        shouldInvokeListeners: expect.any(Function),
+        listeners: {
+          [getListenerId(0, 0)]: listener,
+        },
+        trackedFn: listenFn,
+        running: true,
+      });
     });
   });
 });

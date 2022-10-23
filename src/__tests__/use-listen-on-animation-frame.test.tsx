@@ -26,16 +26,23 @@ describe("useListenOnAnimationFrame hook", () => {
 
   type TestComponentProps = {
     shouldRemoveListener?: boolean;
+    shouldStop?: boolean;
+    shouldRestart?: boolean;
+    autoStart?: boolean;
     listenFn: () => number;
     listener: (newValue: number) => void;
   };
 
   const TestComponent: React.FC<TestComponentProps> = ({
     shouldRemoveListener,
+    shouldStop,
+    shouldRestart,
+    autoStart = true,
     listenFn,
     listener,
   }) => {
-    const [addListener, removeListener] = useListenOnAnimationFrame(listenFn);
+    const [addListener, removeListener, stop, restart] =
+      useListenOnAnimationFrame(listenFn, { autoStart });
 
     const listenerIdRef = useRef<string>();
 
@@ -53,8 +60,130 @@ describe("useListenOnAnimationFrame hook", () => {
       }
     }, [shouldRemoveListener, removeListener]);
 
+    useEffect(() => {
+      if (shouldStop) {
+        stop();
+      }
+    }, [shouldStop, stop]);
+
+    useEffect(() => {
+      if (shouldRestart) {
+        restart();
+      }
+    }, [shouldRestart, restart]);
+
     return null;
   };
+
+  describe("when tracking is stopped and started after some time", () => {
+    const listenFn = () => {
+      counter += 1;
+
+      return counter;
+    };
+
+    const listener = (newCounter: number) => {
+      listenerResult = newCounter * newCounter;
+    };
+
+    it("invokes tracked function only until its stopped and then after its started", () => {
+      const { rerender } = render(
+        <TestComponent listener={listener} listenFn={listenFn} />
+      );
+
+      expect(counter).toEqual(0);
+      expect(listenerResult).toEqual(0);
+
+      jest.advanceTimersByTime(ANIMATION_FRAME_WAIT_TIME);
+
+      expect(counter).toEqual(1);
+      expect(listenerResult).toEqual(1);
+
+      jest.advanceTimersByTime(ANIMATION_FRAME_WAIT_TIME);
+
+      expect(counter).toEqual(2);
+      expect(listenerResult).toEqual(4);
+
+      jest.advanceTimersByTime(3 * ANIMATION_FRAME_WAIT_TIME);
+
+      expect(counter).toEqual(5);
+      expect(listenerResult).toEqual(25);
+
+      rerender(
+        <TestComponent shouldStop listener={listener} listenFn={listenFn} />
+      );
+
+      jest.advanceTimersByTime(25 * ANIMATION_FRAME_WAIT_TIME);
+
+      expect(counter).toEqual(5);
+
+      expect(listenerResult).toEqual(25);
+
+      rerender(
+        <TestComponent shouldRestart listener={listener} listenFn={listenFn} />
+      );
+
+      jest.advanceTimersByTime(ANIMATION_FRAME_WAIT_TIME);
+
+      expect(counter).toEqual(6);
+      expect(listenerResult).toEqual(36);
+
+      jest.advanceTimersByTime(2 * ANIMATION_FRAME_WAIT_TIME);
+
+      expect(counter).toEqual(8);
+      expect(listenerResult).toEqual(64);
+    });
+  });
+
+  describe("when autostart is false", () => {
+    const listenFn = () => {
+      counter += 1;
+
+      return counter;
+    };
+
+    const listener = (newCounter: number) => {
+      listenerResult = newCounter * newCounter;
+    };
+
+    it("doesn't start tracking when the hook is used, until its started", () => {
+      const { rerender } = render(
+        <TestComponent
+          autoStart={false}
+          listener={listener}
+          listenFn={listenFn}
+        />
+      );
+
+      expect(counter).toEqual(0);
+      expect(listenerResult).toEqual(0);
+
+      jest.advanceTimersByTime(ANIMATION_FRAME_WAIT_TIME);
+
+      expect(counter).toEqual(0);
+      expect(listenerResult).toEqual(0);
+
+      jest.advanceTimersByTime(3 * ANIMATION_FRAME_WAIT_TIME);
+
+      expect(counter).toEqual(0);
+      expect(listenerResult).toEqual(0);
+
+      rerender(
+        <TestComponent shouldRestart listener={listener} listenFn={listenFn} />
+      );
+
+      jest.advanceTimersByTime(ANIMATION_FRAME_WAIT_TIME);
+
+      expect(counter).toEqual(1);
+      expect(listenerResult).toEqual(1);
+
+      jest.advanceTimersByTime(5 * ANIMATION_FRAME_WAIT_TIME);
+
+      expect(counter).toEqual(6);
+
+      expect(listenerResult).toEqual(36);
+    });
+  });
 
   describe("when component is unmounted after some time", () => {
     const listenFn = () => {
@@ -278,7 +407,9 @@ describe("useListenOnAnimationFrame hook", () => {
     const TestComponentWithCustomShouldInvoke: React.FC = () => {
       const [addListener, removeListener] = useListenOnAnimationFrame(
         listenFn,
-        shouldInvokeListeners
+        {
+          shouldInvokeListeners,
+        }
       );
 
       useEffect(() => {
@@ -292,7 +423,7 @@ describe("useListenOnAnimationFrame hook", () => {
       return null;
     };
 
-    it.only("relies on shouldInvokeListeners when deciding whether to invoke listeners or not", () => {
+    it("relies on shouldInvokeListeners when deciding whether to invoke listeners or not", () => {
       render(<TestComponentWithCustomShouldInvoke />);
 
       expect(counter).toEqual(0);
