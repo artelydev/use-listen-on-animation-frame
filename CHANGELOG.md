@@ -1,3 +1,10 @@
+## [1.3.3](https://github.com/artelydev/use-listen-on-animation-frame/compare/v1.3.2...v1.3.3) (2022-10-23)
+
+
+### Bug Fixes
+
+* **readme:** move previous animation frame section to advanced ([18ce8a5](https://github.com/artelydev/use-listen-on-animation-frame/commit/18ce8a5b669c6b6cf5519c751cd8c6169cc76f80))
+
 ## [1.3.2](https://github.com/artelydev/use-listen-on-animation-frame/compare/v1.3.1...v1.3.2) (2022-10-23)
 
 
