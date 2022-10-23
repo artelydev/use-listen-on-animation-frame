@@ -26,19 +26,21 @@ const startRequestAnimationFrameLoop = () => {
     startRequestAnimationFrameLoop
   );
 
-  Object.values(animationFrameListenersTree).forEach(
-    ({ listeners, shouldInvokeListeners, trackedFn }) => {
-      const trackedFnValue = trackedFn();
+  if (requestAnimationFrameLooping) {
+    Object.values(animationFrameListenersTree).forEach(
+      ({ listeners, shouldInvokeListeners, trackedFn }) => {
+        const trackedFnValue = trackedFn();
 
-      if (!shouldInvokeListeners(trackedFnValue)) {
-        return;
+        if (!shouldInvokeListeners(trackedFnValue)) {
+          return;
+        }
+
+        Object.values(listeners).forEach((listener) => {
+          listener(trackedFnValue);
+        });
       }
-
-      Object.values(listeners).forEach((listener) => {
-        listener(trackedFnValue);
-      });
-    }
-  );
+    );
+  }
 };
 
 /**

@@ -24,18 +24,16 @@ describe("useListenOnAnimationFrame hook", () => {
     listenerResult = 0;
   });
 
-  const listener = (newCounter: number) => {
-    listenerResult = newCounter * newCounter;
-  };
-
   type TestComponentProps = {
     shouldRemoveListener?: boolean;
     listenFn: () => number;
+    listener: (newValue: number) => void;
   };
 
   const TestComponent: React.FC<TestComponentProps> = ({
     shouldRemoveListener,
     listenFn,
+    listener,
   }) => {
     const [addListener, removeListener] = useListenOnAnimationFrame(listenFn);
 
@@ -47,7 +45,7 @@ describe("useListenOnAnimationFrame hook", () => {
       return () => {
         removeListener(listenerIdRef.current as string);
       };
-    }, [addListener, removeListener]);
+    }, [addListener, removeListener, listener]);
 
     useEffect(() => {
       if (shouldRemoveListener) {
@@ -65,8 +63,14 @@ describe("useListenOnAnimationFrame hook", () => {
       return counter;
     };
 
+    const listener = (newCounter: number) => {
+      listenerResult = newCounter * newCounter;
+    };
+
     it("listens to a function return on every animation frame, but listen function and listeners are invoked only until component is unmounted", () => {
-      const { unmount } = render(<TestComponent listenFn={listenFn} />);
+      const { unmount } = render(
+        <TestComponent listener={listener} listenFn={listenFn} />
+      );
 
       expect(counter).toEqual(0);
       expect(listenerResult).toEqual(0);
@@ -103,8 +107,14 @@ describe("useListenOnAnimationFrame hook", () => {
       return counter;
     };
 
+    const listener = (newCounter: number) => {
+      listenerResult = newCounter * newCounter;
+    };
+
     it("listens to a function return on every animation frame, but invokes listener only if it exists", () => {
-      const { rerender } = render(<TestComponent listenFn={listenFn} />);
+      const { rerender } = render(
+        <TestComponent listener={listener} listenFn={listenFn} />
+      );
 
       expect(counter).toEqual(0);
       expect(listenerResult).toEqual(0);
@@ -124,7 +134,13 @@ describe("useListenOnAnimationFrame hook", () => {
       expect(counter).toEqual(5);
       expect(listenerResult).toEqual(25);
 
-      rerender(<TestComponent listenFn={listenFn} shouldRemoveListener />);
+      rerender(
+        <TestComponent
+          listener={listener}
+          listenFn={listenFn}
+          shouldRemoveListener
+        />
+      );
 
       jest.advanceTimersByTime(25 * ANIMATION_FRAME_WAIT_TIME);
 
@@ -141,8 +157,12 @@ describe("useListenOnAnimationFrame hook", () => {
       return counter;
     };
 
+    const listener = (newCounter: number) => {
+      listenerResult = newCounter * newCounter;
+    };
+
     it("listens to a function return on every animation frame", () => {
-      render(<TestComponent listenFn={listenFn} />);
+      render(<TestComponent listener={listener} listenFn={listenFn} />);
 
       expect(counter).toEqual(0);
       expect(listenerResult).toEqual(0);
@@ -172,8 +192,105 @@ describe("useListenOnAnimationFrame hook", () => {
       return Math.floor(counter / 2);
     };
 
+    const listener = () => {
+      listenerResult = counter * counter;
+    };
+
     it("listens to a function return only on certain frames", () => {
-      render(<TestComponent listenFn={listenFn} />);
+      render(<TestComponent listener={listener} listenFn={listenFn} />);
+
+      expect(counter).toEqual(0);
+      expect(listenerResult).toEqual(0);
+
+      jest.advanceTimersByTime(ANIMATION_FRAME_WAIT_TIME);
+
+      expect(counter).toEqual(1);
+      expect(listenerResult).toEqual(1);
+
+      jest.advanceTimersByTime(ANIMATION_FRAME_WAIT_TIME);
+
+      expect(counter).toEqual(2);
+      expect(listenerResult).toEqual(4);
+
+      jest.advanceTimersByTime(ANIMATION_FRAME_WAIT_TIME);
+
+      expect(counter).toEqual(3);
+      expect(listenerResult).toEqual(4);
+
+      jest.advanceTimersByTime(ANIMATION_FRAME_WAIT_TIME);
+
+      expect(counter).toEqual(4);
+      expect(listenerResult).toEqual(16);
+
+      jest.advanceTimersByTime(2 * ANIMATION_FRAME_WAIT_TIME);
+
+      expect(counter).toEqual(6);
+      expect(listenerResult).toEqual(36);
+    });
+  });
+
+  describe("when used without listeners", () => {
+    const listenFn = () => {
+      counter += 1;
+
+      return counter;
+    };
+
+    const TestComponentWithoutListeners: React.FC = () => {
+      useListenOnAnimationFrame(listenFn);
+
+      return null;
+    };
+
+    it("behaves like a loop on animation frames", () => {
+      render(<TestComponentWithoutListeners />);
+
+      expect(counter).toEqual(0);
+
+      jest.advanceTimersByTime(ANIMATION_FRAME_WAIT_TIME);
+
+      expect(counter).toEqual(1);
+
+      jest.advanceTimersByTime(9 * ANIMATION_FRAME_WAIT_TIME);
+
+      expect(counter).toEqual(10);
+    });
+  });
+
+  describe("when custom shouldInvokeListeners function is supplied", () => {
+    const listenFn = () => {
+      counter += 1;
+
+      return counter;
+    };
+
+    const shouldInvokeListeners = () => {
+      return counter % 4 === 0;
+    };
+
+    const listener = (newCounter: number) => {
+      listenerResult = newCounter * newCounter;
+    };
+
+    const TestComponentWithCustomShouldInvoke: React.FC = () => {
+      const [addListener, removeListener] = useListenOnAnimationFrame(
+        listenFn,
+        shouldInvokeListeners
+      );
+
+      useEffect(() => {
+        const listenerId = addListener(listener);
+
+        return () => {
+          removeListener(listenerId);
+        };
+      }, [addListener, removeListener]);
+
+      return null;
+    };
+
+    it("relies on shouldInvokeListeners when deciding whether to invoke listeners or not", () => {
+      render(<TestComponentWithCustomShouldInvoke />);
 
       expect(counter).toEqual(0);
       expect(listenerResult).toEqual(0);
@@ -183,25 +300,20 @@ describe("useListenOnAnimationFrame hook", () => {
       expect(counter).toEqual(1);
       expect(listenerResult).toEqual(0);
 
-      jest.advanceTimersByTime(ANIMATION_FRAME_WAIT_TIME);
-
-      expect(counter).toEqual(2);
-      expect(listenerResult).toEqual(1);
-
-      jest.advanceTimersByTime(ANIMATION_FRAME_WAIT_TIME);
-
-      expect(counter).toEqual(3);
-      expect(listenerResult).toEqual(1);
-
-      jest.advanceTimersByTime(ANIMATION_FRAME_WAIT_TIME);
+      jest.advanceTimersByTime(3 * ANIMATION_FRAME_WAIT_TIME);
 
       expect(counter).toEqual(4);
-      expect(listenerResult).toEqual(4);
+      expect(listenerResult).toEqual(16);
 
-      jest.advanceTimersByTime(2 * ANIMATION_FRAME_WAIT_TIME);
+      jest.advanceTimersByTime(ANIMATION_FRAME_WAIT_TIME);
 
-      expect(counter).toEqual(6);
-      expect(listenerResult).toEqual(9);
+      expect(counter).toEqual(5);
+      expect(listenerResult).toEqual(16);
+
+      jest.advanceTimersByTime(3 * ANIMATION_FRAME_WAIT_TIME);
+
+      expect(counter).toEqual(8);
+      expect(listenerResult).toEqual(64);
     });
   });
 });
