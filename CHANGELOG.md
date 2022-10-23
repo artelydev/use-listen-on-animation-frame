@@ -1,3 +1,10 @@
+# [1.4.0](https://github.com/artelydev/use-listen-on-animation-frame/compare/v1.3.4...v1.4.0) (2022-10-23)
+
+
+### Features
+
+* **sandboxes:** add demos ([e701802](https://github.com/artelydev/use-listen-on-animation-frame/commit/e701802e83eeaedb2b878e1d23b49634ce339c7e))
+
 ## [1.3.4](https://github.com/artelydev/use-listen-on-animation-frame/compare/v1.3.3...v1.3.4) (2022-10-23)
 
 
