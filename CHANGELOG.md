@@ -1,3 +1,10 @@
+# [1.5.0](https://github.com/artelydev/use-listen-on-animation-frame/compare/v1.4.2...v1.5.0) (2022-10-24)
+
+
+### Features
+
+* **autoclean!:** simple hook, autoclean & bette readmy ([31fc761](https://github.com/artelydev/use-listen-on-animation-frame/commit/31fc761fc810dd51c91c92d391ab18785f2d9aa9))
+
 ## [1.4.2](https://github.com/artelydev/use-listen-on-animation-frame/compare/v1.4.1...v1.4.2) (2022-10-24)
 
 
