@@ -1,3 +1,10 @@
+## [2.0.1](https://github.com/artelydev/use-listen-on-animation-frame/compare/v2.0.0...v2.0.1) (2022-10-24)
+
+
+### Bug Fixes
+
+* **use-animation-frame:** make options optional ([8daee80](https://github.com/artelydev/use-listen-on-animation-frame/commit/8daee80f63a0e65ae6da497c2492d118098b8905))
+
 # [2.0.0](https://github.com/artelydev/use-listen-on-animation-frame/compare/v1.5.0...v2.0.0) (2022-10-24)
 
 

@@ -1,6 +1,6 @@
 {
   "name": "use-listen-on-animation-frame",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Listen to any function at extreme frequency",
   "author": "Yaroslav Kasperovych <ilovewindows96@gmail.com>",
   "license": "MIT",
