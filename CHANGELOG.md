@@ -1,3 +1,10 @@
+## [1.4.1](https://github.com/artelydev/use-listen-on-animation-frame/compare/v1.4.0...v1.4.1) (2022-10-24)
+
+
+### Bug Fixes
+
+* **readme:** positioning ([71b77d6](https://github.com/artelydev/use-listen-on-animation-frame/commit/71b77d683d07475d3f1681e9440c8b2c81589c4d))
+
 # [1.4.0](https://github.com/artelydev/use-listen-on-animation-frame/compare/v1.3.4...v1.4.0) (2022-10-23)
 
 
