@@ -5,7 +5,10 @@ export type AnimationFrameListener<AnimationFrameListenerArg> = (
   previousValue?: AnimationFrameListenerArg
 ) => void;
 
-export type TrackedFn<TrackedFnReturn> = () => TrackedFnReturn;
+export type TrackedFn<TrackedFnReturn> = (
+  /** Return value of previous invocation or undefined if there was no invocation yet */
+  previousValue: TrackedFnReturn | undefined
+) => TrackedFnReturn;
 
 export type ShouldInvokeListenersFn<TrackedFnReturn> = (
   /** Value of tracked function on this animation frame  */

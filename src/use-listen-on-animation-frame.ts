@@ -38,7 +38,7 @@ const startRequestAnimationFrameLoop = () => {
           return;
         }
 
-        const trackedFnValue = trackedFn();
+        const trackedFnValue = trackedFn(previousValue);
 
         if (!shouldInvokeListeners(trackedFnValue, previousValue)) {
           animationFrameListenersTree[treeId].previousValue = trackedFnValue;
@@ -53,6 +53,16 @@ const startRequestAnimationFrameLoop = () => {
         animationFrameListenersTree[treeId].previousValue = trackedFnValue;
       }
     );
+  } else {
+    window.cancelAnimationFrame(animationFrameId);
+  }
+};
+
+const ensureAnimationFrameLoopIsRunning = () => {
+  if (!requestAnimationFrameLooping) {
+    requestAnimationFrameLooping = true;
+
+    startRequestAnimationFrameLoop();
   }
 };
 
@@ -97,10 +107,8 @@ export function useListenOnAnimationFrame<TrackedFnReturn>(
       ) => nextValue !== previousValue,
     };
 
-    if (!requestAnimationFrameLooping) {
-      startRequestAnimationFrameLoop();
-
-      requestAnimationFrameLooping = true;
+    if (autoStartRef.current) {
+      ensureAnimationFrameLoopIsRunning();
     }
 
     return () => {
@@ -124,7 +132,7 @@ export function useListenOnAnimationFrame<TrackedFnReturn>(
     useCallback((listener) => {
       if (!animationFrameListenersTree[treeIdRef.current]) {
         throw new Error(
-          "Cannot set a listener on non-existent tree. Make sure that you hasn't stopped tracking"
+          "Cannot set a listener on non-existent tree. Make sure you're not adding listeners when your component is already unmounted"
         );
       }
 
@@ -148,11 +156,21 @@ export function useListenOnAnimationFrame<TrackedFnReturn>(
   const stop: StopFn = useCallback(() => {
     if (animationFrameListenersTree[treeIdRef.current]) {
       animationFrameListenersTree[treeIdRef.current].running = false;
+
+      const isAnythingRunning = Object.values(animationFrameListenersTree).find(
+        ({ running }) => running
+      );
+
+      if (!isAnythingRunning) {
+        requestAnimationFrameLooping = false;
+      }
     }
   }, []);
 
   const start: StartFn = useCallback(() => {
     if (animationFrameListenersTree[treeIdRef.current]) {
+      ensureAnimationFrameLoopIsRunning();
+
       animationFrameListenersTree[treeIdRef.current].running = true;
     }
   }, []);

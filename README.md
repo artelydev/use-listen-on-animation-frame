@@ -15,19 +15,86 @@
     <img alt="Github Actions Build Status" src="https://img.shields.io/github/workflow/status/artelydev/use-listen-on-animation-frame/Main?label=Build&style=flat-square"></img></a>    
   <a href="https://www.npmjs.com/package/use-listen-on-animation-frame">
     <img alt="npm version" src="https://img.shields.io/npm/v/use-listen-on-animation-frame.svg?style=flat-square"></img></a>
-  <a href="https://github.com/prettier/prettier">
-    <img alt="code style: prettier" src="https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square"></img></a>
   <a href="https://github.com/artelydev/use-listen-on-animation-frame/blob/main/LICENSE">
     <img alt="license: MIT" src="https://img.shields.io/github/license/artelydev/use-listen-on-animation-frame">
     </img>
   </a>
+  <img alt="npm bundle size" src="https://img.shields.io/bundlephobia/minzip/use-listen-on-animation-frame"></img>
+  <img alt="typed" src="https://shields.io/badge/TypeScript-3178C6?logo=TypeScript&logoColor=FFF&style=flat-square">
 </p>
 
-## :book: Usage
+<h1>Table of Contents</h1>
 
-### Invoke your function on every animation frame
+- [:vs: Why this library?](#vs-why-this-library)
+- [:green_book: Installation](#greenbook-installation)
+- [:blue_book: Usage](#bluebook-usage)
+- [:orange_book: API](#orangebook-api)
+  - [`useAnimationFrame`](#useanimationframe)
+    - [Arguments](#arguments)
+    - [Returns](#returns)
+    - [Note](#note)
+  - [`useListenOnAnimationFrame`](#uselistenonanimationframe)
+    - [Arguments](#arguments-1)
+    - [Returns](#returns-1)
+  - [When to use `useListenOnAnimationFrame` over `useAnimationFrame`](#when-to-use-uselistenonanimationframe-over-useanimationframe)
+- [:gear: Advanced usage](#gear-advanced-usage)
+  - [Access previous animation frame function return](#access-previous-animation-frame-function-return)
+  - [Start and stop tracking your function](#start-and-stop-tracking-your-function)
+  - [Optimize/Unoptimize your listeners](#optimizeunoptimize-your-listeners)
+- [:exclamation: Q&A](#exclamation-qa)
 
-`setInterval` frequent yet performant alternative
+  - [Why would you even consider using animation frames?](#why-would-you-even-consider-using-animation-frames)
+  - [When you should use this package?](#when-you-should-use-this-package)
+  - [When you should **not** use this package?](#when-you-should-not-use-this-package)
+
+  <hr />
+
+## :vs: Why this library?
+
+| Features                                             | `useListenOnAnimationFrame`                                                                                                                                                                               | `setInterval`                                                     | `requestAnimationFrame`   | `other animation frame libraries`                                         |
+| :--------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- | ------------------------- | ------------------------------------------------------------------------- |
+| suitable for frequent DOM mutations                  | **yes**                                                                                                                                                                                                   | no                                                                | yes                       | usually yes                                                               |
+| single animation frame loop                          | **yes**, for whole application                                                                                                                                                                            | not applicable                                                    | not by default            | **no**, common to have multiple frame loops                               |
+| performant & consistent                              | [**yes**](https://codesandbox.io/s/interval-vs-animation-frame-065es8)                                                                                                                                    | [no](https://codesandbox.io/s/interval-vs-animation-frame-065es8) | depends on implementation | depends on implementation                                                 |
+| side effects                                         | [**yes**](#addlistener) and [**yes**](#when-to-use-uselistenonanimationframe-over-useanimationframe)                                                                                                      | no                                                                | no                        | **no**, commonly not                                                      |
+| extensively controllable (start/stop & side effects) | [**yes**](#start-and-stop-tracking-your-function) and [**yes**](#stop) and [**yes**](#start), and even for side effects with multiple options [[1]](#removelistener) [[2]](#optionsshouldinvokelisteners) | no                                                                | no                        | **no**, commonly not                                                      |
+| autoclean (start/stop/unmount)                       | **yes**, it even automatically stops and starts request animation frame loop only when needed                                                                                                             | no                                                                | no                        | **usually not fully**, it keeps animation frame loop even when not needed |
+| configurable                                         | **yes!** [[1]](#optionsautostart) [[2]](#optionsshouldinvokelisteners) [[3]](#optimizeunoptimize-your-listeners)                                                                                          | no                                                                | no                        | **commonly not**                                                          |
+
+## :green_book: Installation
+
+```bash
+  $ npm i use-listen-on-animation-frame
+```
+
+## :blue_book: Usage
+
+### Do something on animation frames
+
+[Try it on codesandbox](https://codesandbox.io/s/console-date-on-animation-frame-z7xof4)
+
+```typescript
+import React, { useEffect } from "react";
+import { useAnimationFrame } from "use-listen-on-animation-frame";
+
+const fn = () => {
+  console.log(new Date());
+};
+
+const ConsoleDateComponent: React.FC = () => {
+  const [stop] = useAnimationFrame(fn); // starts logging date on every animation frame
+
+  useEffect(() => {
+    const timeoutId = setTimeout(stop, 5000); // stops logging after 5 seconds
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, [stop]);
+
+  return null;
+};
+```
 
 #### Animation frame counter
 
@@ -35,7 +102,7 @@
 
 ```typescript
 import React, { useCallback, useState } from "react";
-import { useListenOnAnimationFrame } from "use-listen-on-animation-frame";
+import { useAnimationFrame } from "use-listen-on-animation-frame";
 
 const AnimationFrameCounter: React.FC = () => {
   const [animationFramesCounter, setAnimationFramesCounter] = useState(0);
@@ -45,15 +112,17 @@ const AnimationFrameCounter: React.FC = () => {
     setAnimationFramesCounter((prev) => prev + 1);
   }, []);
 
-  useListenOnAnimationFrame(handleNewAnimationFrame);
+  useAnimationFrame(handleNewAnimationFrame);
 
   return <div>Browser animation frames painted: {animationFramesCounter}</div>;
 };
 ```
 
-#### Video & timers (comparison vs `timeupdate`)
+#### Video & current timer
 
-[Try it on codesandbox](https://codesandbox.io/s/player-current-time-g6zqgl)
+[Try it on codesandbox](https://codesandbox.io/s/player-current-time-3yy31o)
+
+[Btw, compare it to relying on `timeupdate` event](https://codesandbox.io/s/hooks-vs-timeupdate-g6zqgl)
 
 ```typescript
 import React, { useCallback, useEffect, useState, useRef } from "react";
@@ -61,24 +130,8 @@ import { useListenOnAnimationFrame } from "use-listen-on-animation-frame";
 
 const VideoWithCurrentTime: React.FC = () => {
   const [videoCurrentTime, setVideoCurrentTime] = useState<number>(0);
-  const [timeupdateCurrentTime, setTimeupdateCurrentTime] = useState<number>(0);
 
-  const videoRef = useRef<HTMLVideoElement | null>(null);
-
-  const setVideoRef = useCallback((videoElement: HTMLVideoElement | null) => {
-    const onTimeupdate = () => {
-      setTimeupdateCurrentTime(videoRef.current!.currentTime);
-    };
-
-    if (videoElement) {
-      videoRef.current = videoElement;
-
-      videoElement.addEventListener("timeupdate", onTimeupdate);
-    } else {
-      videoRef.current?.removeEventListener("timeupdate", onTimeupdate);
-      videoRef.current = null;
-    }
-  }, []);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   /* better memoized */
   const getVideoTime = useCallback(() => {
@@ -87,36 +140,23 @@ const VideoWithCurrentTime: React.FC = () => {
     }
   }, []);
 
-  const [addListener, removeListener] = useListenOnAnimationFrame(getVideoTime);
+  const [addListener] = useListenOnAnimationFrame(getVideoTime);
 
   useEffect(() => {
     const listenerId = addListener((currentTime) => {
       setVideoCurrentTime(currentTime);
     });
-
-    return () => {
-      removeListener(listenerId);
-    };
-  }, [addListener, removeListener]);
+  }, [addListener]);
 
   return (
     <>
-      <h1>Player with timers</h1>
+      <h1>Player with current timer</h1>
       <video
         controls
         src="https://www.w3schools.com/html/mov_bbb.mp4"
-        ref={setVideoRef}
+        ref={videoRef}
       />
-      <p>
-        Actual video time is:{" "}
-        <span style={{ color: "green" }}>{videoCurrentTime}</span>
-      </p>
-      <p>
-        What HTML5 Video timeupdate reports:{" "}
-        <span style={{ color: "red" }}>{timeupdateCurrentTime}</span>
-      </p>
-
-      <h3>How would you build your UI with that?</h3>
+      <p>Video time is: {videoCurrentTime}</p>
     </>
   );
 };
@@ -151,10 +191,10 @@ const EveningHoursIndicator: React.FC = () => {
     return new Date().getHours();
   }, []);
 
-  const [addListener, removeListener] = useListenOnAnimationFrame(getHours);
+  const [addListener] = useListenOnAnimationFrame(getHours);
 
   useEffect(() => {
-    const pm8Listener = addListener((nextHours) => {
+    addListener((nextHours) => {
       if (nextHours > 20) {
         console.log("its later than 8 PM");
 
@@ -162,19 +202,14 @@ const EveningHoursIndicator: React.FC = () => {
       }
     });
 
-    const pm9Listener = addListener((nextHours) => {
+    addListener((nextHours) => {
       if (nextHours > 21) {
         console.log("its later than 9 PM");
 
         setReached9PM(true);
       }
     });
-
-    return () => {
-      removeListener(pm8Listener);
-      removeListener(pm9Listener);
-    };
-  }, [addListener, removeListener]);
+  }, [addListener]);
 
   return (
     <>
@@ -184,6 +219,294 @@ const EveningHoursIndicator: React.FC = () => {
   );
 };
 ```
+
+## :orange_book: API
+
+Library provides 2 hooks which are `useAnimationFrame`, `useListenOnAnimationFrame`.
+
+### `useAnimationFrame`
+
+Starts invoking supplied function on every animation frame.
+
+#### Arguments
+
+##### `fn`
+
+First argument `fn` - a function to be invoked on every animation frame.
+
+**It's better for this `fn` to be memoized either with `useCallback` or to be defined outside of your component if that still fits your needs**
+
+`fn` might accept a single argument of previous invocation return like this:
+
+```typescript
+import { useAnimationFrame } from "use-listen-on-animation-frame";
+
+const fn = useCallback((previousFnReturn) => {
+  console.log("previouslyReturned", previousFnReturn); // undefined if no previous call yet
+
+  const fnReturn = new Date();
+
+  console.log("now returning", fnReturn);
+
+  return fnReturn;
+}, []);
+
+useAnimationFrame(fn);
+```
+
+##### `options`
+
+###### `options.autoStart`
+
+Boolean indicator whether to start invoking function immediately when the hook is used or not. **Defaults** to `true`.
+
+```typescript
+const [_stop, start] = useAnimationFrame(fn, {
+  autoStart: false,
+});
+
+useEffect(() => {
+  if (somethingIsGood) {
+    start();
+  }
+}, [start]);
+```
+
+#### Returns
+
+Returns `[stop, start]` functions.
+
+##### `[stop]`
+
+Function to stop the function from being invoked on every animation frame, and if that was the last function in application still running on animation frame - will effectively `cancelRequestAnimationFrame`.
+
+**You can be assured in it's static reference - no changes between renders, same function**
+
+```typescript
+const [stop] = useAnimationFrame(fn);
+
+useEffect(() => {
+  if (somethingIsWrong) {
+    stop();
+  }
+}, [stop]);
+```
+
+##### `[ , start]`
+
+Function to start the function invocations on every animation frame, and if it's the first function in application to be run on animation frame - starts a single animation frame loop.
+
+**You can be assured in it's static reference - no changes between renders, same function**
+
+```typescript
+const [stop, start] = useAnimationFrame(fn);
+
+useEffect(() => {
+  if (somethingIsWrong) {
+    stop();
+  }
+}, [stop]);
+
+useEffect(() => {
+  if (somethingIsGoodAgain) {
+    start();
+  }
+}, [start]);
+```
+
+#### Note
+
+This is a handy alias for.
+
+```typescript
+const [_add, _remove, stop, start] = useListenOnAnimationFrame(fn, {
+  autostart,
+});
+
+return [stop, start];
+```
+
+### `useListenOnAnimationFrame`
+
+#### Arguments
+
+##### `fn`
+
+[See `useAnimationFrame` `fn`](#fn)
+
+##### `options`
+
+Optional second argument `options`
+
+###### `options.autoStart`
+
+[See `useAnimationFrame` `autoStart`](#optionsautostart)
+
+###### `options.shouldInvokeListeners`
+
+Function that accepts 2 arguments `thisFrameReturn` and `previousFrameReturn` and determines if listeners should be invoked on this frame or not.
+
+`previousFrameReturn` can be `undefined` if there was no previous frame return yet.
+
+**It's better for this function to be memoized with `useCallback` or defined outside of your component if it still fits your needs**
+
+```typescript
+const shouldInvokeListeners = useCallback(
+  (thisFrameReturn, previousFrameReturn) => {
+    /** invoke listeners only if this frame return is bigger than 5 or previous frame return is bigger than 3 */
+    return thisFrameReturn > 5 || previousFrameReturn < 3;
+  },
+  []
+);
+
+const [addFrameListener] = useListenOnAnimationFrame(fn, {
+  shouldInvokeListeners,
+});
+```
+
+#### Returns
+
+Returns `[addListener, removeListener, stop, start]`;
+
+##### `[addListener]`
+
+Function that accepts your `listener` function.
+`listener` in turn accepts 2 arguments `thisFrameReturn` and `previousFrameReturn`.
+
+**Returns** `listenerId: string`, unique uuid of your listener, if you need to remove it later.
+
+**You can be assured in it's static reference - no changes between renders, same function**
+
+```typescript
+const fn = useCallback(() => {
+  return new Date().getTime();
+}, []);
+
+const [addListener] = useListenOnAnimationFrame(fn);
+
+useEffect(() => {
+  addListener((thisFrameReturn, previousFrameReturn) => {
+    console.log("this frame returned", thisFrameReturn);
+
+    // possibly undefined if no previous call yet
+    if (previousFrameReturn !== undefined) {
+      console.log("previous frame returned", previousFrameReturn);
+    }
+
+    // do anything
+  });
+}, [addListener]);
+```
+
+##### `[ , removeListener]`
+
+Function that accepts `listenerId: string` unique uuid from [`[addListener]`](#addlistener) and removes a listener.
+
+**You can be assured in it's static reference - no changes between renders, same function**
+
+**NOTE!** There is no need to removeListener as a cleanup for a component. Whole listener tree will be destroyed when component will be unmounted. Use it only when you explicitly need to remove your side effect for some matter, or if you add your listener conditionally, and want it to be conditionally removed.
+
+```typescript
+const [addListener, removeListener] = useListenOnAnimationFrame(fn);
+
+const [listenerId, setListenerId] = useState<string>();
+
+useEffect(() => {
+  if (somethingGoodHappened) {
+    setListenerId(
+      addListener(() => {
+        // do anything
+      })
+    );
+  }
+}, [addListener, somethingGoodHappened]);
+
+useEffect(() => {
+  if (somethingBadHappened) {
+    removeListener(listenerId);
+  }
+}, [removeListener, listenerId, somethingBadHappened]);
+```
+
+##### `[ , , stop]`
+
+[See `useAnimationFrame` `stop`](#stop)
+
+##### `[ , , , start]`
+
+[See `useAnimationFrame` `start`](#start)
+
+### When to use `useListenOnAnimationFrame` over `useAnimationFrame`
+
+You might have noticed that you could simply put your function inside `useAnimationFrame`, do side effects inside it, `start` and `stop` it when you need.
+
+It is true, however **you should consider using `useListenOnAnimationFrame` with listeners when you want multiple side effects (or callbacks)** for your function on animation frames.
+
+Comparing
+
+```typescript
+import { useAnimationFrame } from "use-listen-on-animation-frame";
+
+const biggerThan2S = () => {
+  if (video.currentTime > 2) {
+    console.log("video current time is bigger than 2s");
+  }
+};
+
+const lesserThan5S = () => {
+  if (video.currentTime < 5) {
+    console.log("video current time is lesser than 5s");
+  }
+};
+
+const seekToStartWhenReached10S = () => {
+  if (video.currentTime >= 10) {
+    video.currentTime = 0;
+  }
+};
+
+useAnimationFrame(biggerThan2S);
+useAnimationFrame(lesserThan5S);
+useAnimationFrame(seekToStartWhenReached10S);
+```
+
+This will effectively call `video.currentTime` 3 times on every animation frame and do some side effects. Instead, we could track `video.currentTime` specifically once and add listeners to it.
+
+This way, tracked function (`video.currentTime` in this example, but could be something really heavy) will only be invoked once on each animation frame:
+
+```typescript
+import { useListenOnAnimationFrame } from "use-listen-on-animation-frame";
+
+const getCurrentTime = () => video.currentTime;
+
+const biggerThan2S = (currentTime) => {
+  if (currentTime > 2) {
+    console.log("video current time is bigger than 2s");
+  }
+};
+
+const lesserThan5S = (currentTime) => {
+  if (currentTime < 5) {
+    console.log("video current time is lesser than 5s");
+  }
+};
+
+const seekToStartWhenReached10S = (currentTime) => {
+  if (currentTime >= 10) {
+    video.currentTime = 0;
+  }
+};
+
+const [addListener] = useListenOnAnimationFrame(getCurrentTime);
+
+useEffect(() => {
+  addListener(biggerThan2S);
+  addListener(lesserThan5S);
+  addListener(seekToStartWhenReached10S);
+}, [addListener]);
+```
+
+Which will effectively call `video.currentTime` once on each animationFrame and 3 listeners to it.
 
 ## :gear: Advanced usage
 
@@ -204,26 +527,19 @@ const getMsElapsedFrom1970 = () => {
 const MilisecondsElapsedFrom1970: React.FC = () => {
   const [ms, setMs] = useState<number>(new Date().getTime());
 
-  const [addListener, removeListener] =
-    useListenOnAnimationFrame(getMsElapsedFrom1970);
+  const [addListener] = useListenOnAnimationFrame(getMsElapsedFrom1970);
 
   useEffect(() => {
-    const previousFrameListenerId = addListener(
-      (_, previousFrameTimeElapsed) => {
-        /**
-         * Can be undefined, on the first call,
-         * because there was no previous one
-         */
-        if (previousFrameTimeElapsed) {
-          setMs(previousFrameTimeElapsed);
-        }
+    addListener((_, previousFrameTimeElapsed) => {
+      /**
+       * Can be undefined, on the first call,
+       * because there was no previous one
+       */
+      if (previousFrameTimeElapsed) {
+        setMs(previousFrameTimeElapsed);
       }
-    );
-
-    return () => {
-      removeListener(previousFrameListenerId);
-    };
-  }, [addListener, removeListener]);
+    });
+  }, [addListener]);
 
   return (
     <>
@@ -259,26 +575,19 @@ export const ExtremelySmoothTimer: React.FC = () => {
   );
   const [isTicking, setIsTicking] = useState(true);
 
-  const [addListener, removeListener, stop, start] = useListenOnAnimationFrame(
-    getDate,
-    {
-      /**
-       * optionally indicate that the getDate function and
-       * listeners should not be invoked until you `start()`
-       */
-      autoStart: false,
-    }
-  );
+  const [addListener, , stop, start] = useListenOnAnimationFrame(getDate, {
+    /**
+     * optionally indicate that the getDate function and
+     * listeners should not be invoked until you `start()`
+     */
+    autoStart: false,
+  });
 
   useEffect(() => {
-    const listenerId = addListener((date) => {
+    addListener((date) => {
       setCurrentTime(formatDate(date));
     });
-
-    return () => {
-      removeListener(listenerId);
-    };
-  }, [addListener, removeListener]);
+  }, [addListener]);
 
   useEffect(() => {
     if (isTicking) {
@@ -320,7 +629,7 @@ export const ExtremelySmoothTimer: React.FC = () => {
 
 ### Optimize/Unoptimize your listeners
 
-By default, if you don't provide `shouldInvokeListeners` option - listeners will be invoked only if tracked function return changes. It means that a supplied function will still be invoked on every animation frame, but listeners will not.
+By default, if you don't provide [`shouldInvokeListeners` option](#optionsshouldinvokelisteners) - listeners will be invoked only if tracked function return changes. It means that a supplied function will still be invoked on every animation frame, but listeners will not.
 
 [Try it on codesandbox](https://codesandbox.io/s/player-timer-heavy-load-yqz79q)
 
@@ -347,6 +656,8 @@ const alwaysInvokeListeners = () => {
    * usually you shouldn't do this, as we try to cut
    * performance costs, we don't want to invoke a bunch
    * of functions even if tracked function return hasn't changed
+   *
+   * Listeners will be invoked even if player current time hasn't changed
    */
   return true;
 };
@@ -362,28 +673,22 @@ const VideoWithCurrentTime: React.FC = () => {
     }
   }, []);
 
-  const [addOptimizedListener, removeOptimizedListener] =
-    useListenOnAnimationFrame(getVideoTime, {
-      shouldInvokeListeners: conditionallyInvokeListeners,
-    });
+  const [addOptimizedListener] = useListenOnAnimationFrame(getVideoTime, {
+    shouldInvokeListeners: conditionallyInvokeListeners,
+  });
 
-  const [addNotOptimizedListener, removeNotOptimizedListener] =
-    useListenOnAnimationFrame(getVideoTime, {
-      shouldInvokeListeners: alwaysInvokeListeners,
-    });
+  const [addNotOptimizedListener] = useListenOnAnimationFrame(getVideoTime, {
+    shouldInvokeListeners: alwaysInvokeListeners,
+  });
 
   useEffect(() => {
-    const notOptimizedListenerId = addNotOptimizedListener((currentTime) => {
+    addNotOptimizedListener((currentTime) => {
       setVideoCurrentTime(currentTime);
     });
-
-    return () => {
-      removeNotOptimizedListener(notOptimizedListenerId);
-    };
-  }, [addNotOptimizedListener, removeNotOptimizedListener]);
+  }, [addNotOptimizedListener]);
 
   useEffect(() => {
-    const optimizedListenerId = addOptimizedListener(() => {
+    addOptimizedListener(() => {
       /**
        * does something heavy only when video current time
        * is between 1 and 2 seconds
@@ -394,11 +699,7 @@ const VideoWithCurrentTime: React.FC = () => {
 
       console.clear();
     });
-
-    return () => {
-      removeOptimizedListener(optimizedListenerId);
-    };
-  }, [addOptimizedListener, removeOptimizedListener]);
+  }, [addOptimizedListener]);
 
   return (
     <>
@@ -440,6 +741,6 @@ const VideoWithCurrentTime: React.FC = () => {
 
 - ### When you should **not** use this package?
 
-  If you don't need to invoke/listen to a function at extreme frequency.
+  If you don't need to invoke/listen to a function very frequently and mutate your DOM.
 
   <b>Ask yourself, is there any other way?</b>
