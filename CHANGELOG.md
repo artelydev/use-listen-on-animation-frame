@@ -1,3 +1,15 @@
+# [2.0.0](https://github.com/artelydev/use-listen-on-animation-frame/compare/v1.5.0...v2.0.0) (2022-10-24)
+
+
+### Features
+
+* **hook:** autoclean, new hook, fix types ([3e6a75e](https://github.com/artelydev/use-listen-on-animation-frame/commit/3e6a75ee9621ce93011eb5edee7e2958accfa0b9))
+
+
+### BREAKING CHANGES
+
+* **hook:** no need to remove listener because of autoclean, fix types
+
 # [1.5.0](https://github.com/artelydev/use-listen-on-animation-frame/compare/v1.4.2...v1.5.0) (2022-10-24)
 
 
