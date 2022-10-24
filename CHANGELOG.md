@@ -1,3 +1,10 @@
+## [2.0.2](https://github.com/artelydev/use-listen-on-animation-frame/compare/v2.0.1...v2.0.2) (2022-10-24)
+
+
+### Bug Fixes
+
+* **readme:** code to collapsibles ([57d0a06](https://github.com/artelydev/use-listen-on-animation-frame/commit/57d0a06987c8eb52e05ea93b9fd6099d8c01cb4e))
+
 ## [2.0.1](https://github.com/artelydev/use-listen-on-animation-frame/compare/v2.0.0...v2.0.1) (2022-10-24)
 
 
