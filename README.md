@@ -27,7 +27,7 @@
 
 ### Invoke your function on every animation frame
 
-`setInterval` but extremely frequent & performant.
+`setInterval` frequent yet performant alternative
 
 #### Animation frame counter
 
@@ -239,6 +239,8 @@ You can stop and start tracking again whenever you want.
 
 [Try it on codesandbox](https://codesandbox.io/s/controllable-timer-292wmz)
 
+<em>[Btw, compare the above performance with `setInterval`. You couldn't achieve same smoothness when event loop is busy](https://codesandbox.io/s/interval-vs-animation-frame-065es8)</em>
+
 ```typescript
 import React, { useEffect, useState } from "react";
 import { useListenOnAnimationFrame } from "use-listen-on-animation-frame";
@@ -315,8 +317,6 @@ export const ExtremelySmoothTimer: React.FC = () => {
   );
 };
 ```
-
-<em>[Btw, compare the above performance with `setInterval`. You couldn't achieve same smoothness when event loop is busy](https://codesandbox.io/s/interval-vs-animation-frame-065es8)</em>
 
 ### Optimize/Unoptimize your listeners
 
