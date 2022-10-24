@@ -51,7 +51,7 @@ const AnimationFrameCounter: React.FC = () => {
 };
 ```
 
-#### Video & timer
+#### Video & timers (comparison vs `timeupdate`)
 
 [Try it on codesandbox](https://codesandbox.io/s/player-current-time-g6zqgl)
 
