@@ -74,6 +74,9 @@
 
 [Try it on codesandbox](https://codesandbox.io/s/console-date-on-animation-frame-z7xof4)
 
+<details open>
+  <summary><b>Source code</b></summary>
+
 ```typescript
 import React, { useEffect } from "react";
 import { useAnimationFrame } from "use-listen-on-animation-frame";
@@ -97,9 +100,14 @@ const ConsoleDateComponent: React.FC = () => {
 };
 ```
 
+</details>
+
 #### Animation frame counter
 
 [Try it on codesandbox](https://codesandbox.io/s/animation-frame-counter-00pfwo)
+
+<details>
+  <summary><b>Source code</b></summary>
 
 ```typescript
 import React, { useCallback, useState } from "react";
@@ -119,11 +127,16 @@ const AnimationFrameCounter: React.FC = () => {
 };
 ```
 
+</details>
+
 #### Video & current timer
 
 [Try it on codesandbox](https://codesandbox.io/s/player-current-time-3yy31o)
 
 [Btw, compare it to relying on `timeupdate` event](https://codesandbox.io/s/hooks-vs-timeupdate-g6zqgl)
+
+<details>
+  <summary><b>Source code</b></summary>
 
 ```typescript
 import React, { useCallback, useEffect, useState, useRef } from "react";
@@ -163,11 +176,16 @@ const VideoWithCurrentTime: React.FC = () => {
 };
 ```
 
+</details>
+
 ### Track your function return on every animation frame
 
 If you need to track your function return on every animation frame and do something with it - go for it!
 
 [Try it on codesandbox](https://codesandbox.io/s/evening-hours-indicator-pwp3wv)
+
+<details>
+  <summary><b>Source code</b></summary>
 
 ```typescript
 import "./styles.css";
@@ -221,6 +239,8 @@ const EveningHoursIndicator: React.FC = () => {
 };
 ```
 
+</details>
+
 ## :orange_book: API
 
 Library provides 2 hooks which are `useAnimationFrame`, `useListenOnAnimationFrame`.
@@ -237,7 +257,10 @@ First argument `fn` - a function to be invoked on every animation frame.
 
 **It's better for this `fn` to be memoized either with `useCallback` or to be defined outside of your component if that still fits your needs**
 
-`fn` might accept a single argument of previous invocation return like this:
+`fn` might accept a single argument of previous invocation return like in the example:
+
+<details open>
+  <summary><b>Example</b></summary>
 
 ```typescript
 import { useAnimationFrame } from "use-listen-on-animation-frame";
@@ -255,11 +278,16 @@ const fn = useCallback((previousFnReturn) => {
 useAnimationFrame(fn);
 ```
 
+</details>
+
 ##### `options`
 
 ###### `options.autoStart`
 
 Boolean indicator whether to start invoking function immediately when the hook is used or not. **Defaults** to `true`.
+
+<details>
+  <summary><b>Example</b></summary>
 
 ```typescript
 const [_stop, start] = useAnimationFrame(fn, {
@@ -273,6 +301,8 @@ useEffect(() => {
 }, [start]);
 ```
 
+</details>
+
 #### Returns
 
 Returns `[stop, start]` functions.
@@ -281,8 +311,12 @@ Returns `[stop, start]` functions.
 
 Function to stop the function from being invoked on every animation frame, and if that was the last function in application still running on animation frame - will effectively `cancelRequestAnimationFrame`.
 
-**You can be assured in it's static reference - no changes between renders, same function**
+**You can be assured in it's static reference - no changes between renders, same function**.
 
+<details>
+  <summary><b>Example</b></summary>
+
+<!-- prettier-ignore-start -->
 ```typescript
 const [stop] = useAnimationFrame(fn);
 
@@ -291,13 +325,20 @@ useEffect(() => {
     stop();
   }
 }, [stop]);
+
 ```
+<!-- prettier-ignore-end -->
+
+</details>
 
 ##### `[ , start]`
 
 Function to start the function invocations on every animation frame, and if it's the first function in application to be run on animation frame - starts a single animation frame loop.
 
 **You can be assured in it's static reference - no changes between renders, same function**
+
+<details>
+  <summary><b>Example</b></summary>
 
 ```typescript
 const [stop, start] = useAnimationFrame(fn);
@@ -315,9 +356,11 @@ useEffect(() => {
 }, [start]);
 ```
 
+</details>
+
 #### Note
 
-This is a handy alias for.
+`useAnimationFrame` is a handy alias for.
 
 ```typescript
 const [_add, _remove, stop, start] = useListenOnAnimationFrame(fn, {
@@ -351,6 +394,9 @@ Function that accepts 2 arguments `thisFrameReturn` and `previousFrameReturn` an
 
 **It's better for this function to be memoized with `useCallback` or defined outside of your component if it still fits your needs**
 
+<details>
+  <summary><b>Example</b></summary>
+
 ```typescript
 const shouldInvokeListeners = useCallback(
   (thisFrameReturn, previousFrameReturn) => {
@@ -365,6 +411,8 @@ const [addFrameListener] = useListenOnAnimationFrame(fn, {
 });
 ```
 
+</details>
+
 #### Returns
 
 Returns `[addListener, removeListener, stop, start]`;
@@ -377,6 +425,9 @@ Function that accepts your `listener` function.
 **Returns** `listenerId: string`, unique uuid of your listener, if you need to remove it later.
 
 **You can be assured in it's static reference - no changes between renders, same function**
+
+<details>
+  <summary><b>Example</b></summary>
 
 ```typescript
 const fn = useCallback(() => {
@@ -399,6 +450,8 @@ useEffect(() => {
 }, [addListener]);
 ```
 
+</details>
+
 ##### `[ , removeListener]`
 
 Function that accepts `listenerId: string` unique uuid from [`[addListener]`](#addlistener) and removes a listener.
@@ -406,6 +459,9 @@ Function that accepts `listenerId: string` unique uuid from [`[addListener]`](#a
 **You can be assured in it's static reference - no changes between renders, same function**
 
 **NOTE!** There is no need to removeListener as a cleanup for a component. Whole listener tree will be destroyed when component will be unmounted. Use it only when you explicitly need to remove your side effect for some matter, or if you add your listener conditionally, and want it to be conditionally removed.
+
+<details>
+  <summary><b>Example</b></summary>
 
 ```typescript
 const [addListener, removeListener] = useListenOnAnimationFrame(fn);
@@ -429,6 +485,8 @@ useEffect(() => {
 }, [removeListener, listenerId, somethingBadHappened]);
 ```
 
+</details>
+
 ##### `[ , , stop]`
 
 [See `useAnimationFrame` `stop`](#stop)
@@ -441,7 +499,10 @@ useEffect(() => {
 
 You might have noticed that you could simply put your function inside `useAnimationFrame`, do side effects inside it, `start` and `stop` it when you need.
 
-It is true, however **you should consider using `useListenOnAnimationFrame` with listeners when you want multiple side effects (or callbacks)** for your function on animation frames.
+It is true, however **you should consider using `useListenOnAnimationFrame` with listeners when you want multiple side effects (or callbacks)** for your function on animation frames because of performance implications.
+
+<details>
+  <summary><b>Explanation</b></summary>
 
 Comparing
 
@@ -509,6 +570,8 @@ useEffect(() => {
 
 Which will effectively call `video.currentTime` once on each animationFrame and 3 listeners to it.
 
+</details>
+
 ## :gear: Advanced usage
 
 ### Access previous animation frame function return
@@ -516,6 +579,9 @@ Which will effectively call `video.currentTime` once on each animationFrame and 
 If you for some reason need previous animation frame return of your function - it is easily possible.
 
 [Try it on codesandbox](https://codesandbox.io/s/ms-elapsed-from-1970-pwgpft)
+
+<details>
+  <summary><b>Source code</b></summary>
 
 ```typescript
 import React, { useEffect, useState } from "react";
@@ -557,6 +623,8 @@ const MilisecondsElapsedFrom1970: React.FC = () => {
 };
 ```
 
+</details>
+
 ### Start and stop tracking your function
 
 You can stop and start tracking again whenever you want.
@@ -564,6 +632,9 @@ You can stop and start tracking again whenever you want.
 [Try it on codesandbox](https://codesandbox.io/s/controllable-timer-292wmz)
 
 <em>[Btw, compare the above performance with `setInterval`. You couldn't achieve same smoothness when event loop is busy](https://codesandbox.io/s/interval-vs-animation-frame-065es8)</em>
+
+<details>
+  <summary><b>Source code</b></summary>
 
 ```typescript
 import React, { useEffect, useState } from "react";
@@ -635,11 +706,16 @@ export const ExtremelySmoothTimer: React.FC = () => {
 };
 ```
 
+</details>
+
 ### Optimize/Unoptimize your listeners
 
 By default, if you don't provide [`shouldInvokeListeners` option](#optionsshouldinvokelisteners) - listeners will be invoked only if tracked function return changes. It means that a supplied function will still be invoked on every animation frame, but listeners will not.
 
 [Try it on codesandbox](https://codesandbox.io/s/player-timer-heavy-load-yqz79q)
+
+<details>
+  <summary><b>Source code</b></summary>
 
 ```typescript
 import React, { useCallback, useEffect, useState, useRef } from "react";
@@ -722,6 +798,8 @@ const VideoWithCurrentTime: React.FC = () => {
   );
 };
 ```
+
+</details>
 
 ## :exclamation: Q&A
 
