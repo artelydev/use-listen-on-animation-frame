@@ -26,9 +26,9 @@
 <h1>Table of Contents</h1>
 
 - [:vs: Why this library?](#vs-why-this-library)
-- [:green_book: Installation](#greenbook-installation)
-- [:blue_book: Usage](#bluebook-usage)
-- [:orange_book: API](#orangebook-api)
+- [:green_book: Installation](#green_book-installation)
+- [:blue_book: Usage](#blue_book-usage)
+- [:orange_book: API](#orange_book-api)
   - [`useAnimationFrame`](#useanimationframe)
     - [Arguments](#arguments)
     - [Returns](#returns)
@@ -51,15 +51,16 @@
 
 ## :vs: Why this library?
 
-| Features                                             | `useListenOnAnimationFrame`                                                                                                                                                                               | `setInterval`                                                     | `requestAnimationFrame`   | `other animation frame libraries`                                         |
-| :--------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- | ------------------------- | ------------------------------------------------------------------------- |
-| suitable for frequent DOM mutations                  | **yes**                                                                                                                                                                                                   | no                                                                | yes                       | usually yes                                                               |
-| single animation frame loop                          | **yes**, for whole application                                                                                                                                                                            | not applicable                                                    | not by default            | **no**, common to have multiple frame loops                               |
-| performant & consistent                              | [**yes**](https://codesandbox.io/s/interval-vs-animation-frame-065es8)                                                                                                                                    | [no](https://codesandbox.io/s/interval-vs-animation-frame-065es8) | depends on implementation | depends on implementation                                                 |
-| side effects                                         | [**yes**](#addlistener) and [**yes**](#when-to-use-uselistenonanimationframe-over-useanimationframe)                                                                                                      | no                                                                | no                        | **no**, commonly not                                                      |
-| extensively controllable (start/stop & side effects) | [**yes**](#start-and-stop-tracking-your-function) and [**yes**](#stop) and [**yes**](#start), and even for side effects with multiple options [[1]](#removelistener) [[2]](#optionsshouldinvokelisteners) | no                                                                | no                        | **no**, commonly not                                                      |
-| autoclean (start/stop/unmount)                       | **yes**, it even automatically stops and starts request animation frame loop only when needed                                                                                                             | no                                                                | no                        | **usually not fully**, it keeps animation frame loop even when not needed |
-| configurable                                         | **yes!** [[1]](#optionsautostart) [[2]](#optionsshouldinvokelisteners) [[3]](#optimizeunoptimize-your-listeners)                                                                                          | no                                                                | no                        | **commonly not**                                                          |
+| Features                                             | `useListenOnAnimationFrame`                                                                                                                                                                               | `setInterval`                                                     | `requestAnimationFrame`   | `other animation frame libraries`                                          |
+| :--------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- | ------------------------- | -------------------------------------------------------------------------- |
+| suitable for frequent DOM mutations                  | **yes**                                                                                                                                                                                                   | no                                                                | yes                       | commonly yes                                                               |
+| single animation frame loop                          | **yes**, for whole application                                                                                                                                                                            | not applicable                                                    | not by default            | **no**, common to have multiple frame loops                                |
+| performant & consistent                              | [**yes**](https://codesandbox.io/s/interval-vs-animation-frame-065es8)                                                                                                                                    | [no](https://codesandbox.io/s/interval-vs-animation-frame-065es8) | depends on implementation | depends on implementation                                                  |
+| side effects                                         | [**yes**](#addlistener) and [**yes**](#when-to-use-uselistenonanimationframe-over-useanimationframe)                                                                                                      | no                                                                | no                        | **no**, commonly not                                                       |
+| extensively controllable (start/stop & side effects) | [**yes**](#start-and-stop-tracking-your-function) and [**yes**](#stop) and [**yes**](#start), and even for side effects with multiple options [[1]](#removelistener) [[2]](#optionsshouldinvokelisteners) | no                                                                | no                        | **no**, commonly not                                                       |
+| autoclean (start/stop/unmount)                       | **yes**, it even automatically stops and starts request animation frame loop only when needed                                                                                                             | no                                                                | no                        | **commonly not fully**, it keeps animation frame loop even when not needed |
+| configurable                                         | **yes!** [[1]](#optionsautostart) [[2]](#optionsshouldinvokelisteners) [[3]](#optimizeunoptimize-your-listeners)                                                                                          | no                                                                | no                        | **commonly not**                                                           |
+| accessing previous return value                      | [**yes, even for side effects**](#access-previous-animation-frame-function-return)                                                                                                                        | no                                                                | no                        | **commonly not**                                                           |
 
 ## :green_book: Installation
 
@@ -520,7 +521,14 @@ If you for some reason need previous animation frame return of your function - i
 import React, { useEffect, useState } from "react";
 import { useListenOnAnimationFrame } from "use-listen-on-animation-frame";
 
-const getMsElapsedFrom1970 = () => {
+const getMsElapsedFrom1970 = (previousFrameTimeElapsed) => {
+  if (previousFrameTimeElapsed) {
+    console.log(
+      "you wouldn't want to do it here but",
+      previousFrameTimeElapsed
+    );
+  }
+
   return new Date().getTime();
 };
 
