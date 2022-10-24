@@ -1,3 +1,10 @@
+## [1.4.2](https://github.com/artelydev/use-listen-on-animation-frame/compare/v1.4.1...v1.4.2) (2022-10-24)
+
+
+### Bug Fixes
+
+* **readme:** specify timeupdate comparison ([87d80be](https://github.com/artelydev/use-listen-on-animation-frame/commit/87d80becb01e3400b5f8a30a348618fe8bbca3f8))
+
 ## [1.4.1](https://github.com/artelydev/use-listen-on-animation-frame/compare/v1.4.0...v1.4.1) (2022-10-24)
 
 
