@@ -1,3 +1,10 @@
+# [2.2.0](https://github.com/artelydev/use-listen-on-animation-frame/compare/v2.1.2...v2.2.0) (2022-10-25)
+
+
+### Features
+
+* **website:** add pkg website ([2e12a49](https://github.com/artelydev/use-listen-on-animation-frame/commit/2e12a49843ea64763afbcea1855ae43d37d313e5))
+
 ## [2.1.2](https://github.com/artelydev/use-listen-on-animation-frame/compare/v2.1.1...v2.1.2) (2022-10-25)
 
 
