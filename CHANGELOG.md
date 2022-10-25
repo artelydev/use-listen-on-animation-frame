@@ -1,3 +1,10 @@
+## [2.1.1](https://github.com/artelydev/use-listen-on-animation-frame/compare/v2.1.0...v2.1.1) (2022-10-25)
+
+
+### Bug Fixes
+
+* **docs:** title & desc ([5b4d40a](https://github.com/artelydev/use-listen-on-animation-frame/commit/5b4d40a85479a02573636e0a8793ebd74fa0973b))
+
 # [2.1.0](https://github.com/artelydev/use-listen-on-animation-frame/compare/v2.0.2...v2.1.0) (2022-10-25)
 
 
