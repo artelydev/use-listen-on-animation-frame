@@ -280,9 +280,6 @@ You might have noticed that you could simply put your function inside `useAnimat
 
 It is true, however **you should consider using `useListenOnAnimationFrame` with listeners when you want multiple side effects (or callbacks)** for your function on animation frames because of performance implications.
 
-<details>
-  <summary><b>Explanation</b></summary>
-
 Comparing
 
 ```tsx
@@ -348,6 +345,3 @@ useEffect(() => {
 ```
 
 Which will effectively call `video.currentTime` once on each animationFrame and 3 listeners to it.
-
-</details>
-
