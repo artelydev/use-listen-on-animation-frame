@@ -1,3 +1,10 @@
+## [2.1.2](https://github.com/artelydev/use-listen-on-animation-frame/compare/v2.1.1...v2.1.2) (2022-10-25)
+
+
+### Bug Fixes
+
+* **docs:** move hook comparison out from details ([8b92544](https://github.com/artelydev/use-listen-on-animation-frame/commit/8b925443dcb50fe85894bca97352bbdd55420fc3))
+
 ## [2.1.1](https://github.com/artelydev/use-listen-on-animation-frame/compare/v2.1.0...v2.1.1) (2022-10-25)
 
 
