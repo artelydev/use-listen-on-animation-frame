@@ -1,6 +1,6 @@
 <h1>Navigation</h1>
 
-- [Quick start](/)
+- [Quick start](#quick-start)
 - [Usage](usage.md)
 - [Why this package](comparison.md)
 - [API](api.md)

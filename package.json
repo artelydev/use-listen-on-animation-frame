@@ -14,9 +14,13 @@
     "url": "https://github.com/artelydev/use-listen-on-animation-frame/issues"
   },
   "keywords": [
-    "animation frame listener",
+    "useanimationframe",
     "track function on every animation frame",
-    "interval listen function"
+    "interval listen function",
+    "use animation frame",
+    "use animationframe",
+    "useAnimationFrame",
+    "useanimationframe"
   ],
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
