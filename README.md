@@ -26,6 +26,7 @@
 <h1>Navigation</h1>
 
 - [Quick start](#quick-start)
+- [Docs (website)](https://artelydev.github.io/use-listen-on-animation-frame/)
 - [Usage](./docs/usage.md)
 - [Why this package](./docs/comparison.md)
 - [API](./docs/api.md)
