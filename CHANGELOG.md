@@ -1,3 +1,10 @@
+# [2.4.0](https://github.com/artelydev/use-listen-on-animation-frame/compare/v2.3.1...v2.4.0) (2022-10-26)
+
+
+### Features
+
+* **types:** export all types ([0584d75](https://github.com/artelydev/use-listen-on-animation-frame/commit/0584d755b38108305a54dc05e2f4b8d7e1e3d15f))
+
 ## [2.3.1](https://github.com/artelydev/use-listen-on-animation-frame/compare/v2.3.0...v2.3.1) (2022-10-26)
 
 
