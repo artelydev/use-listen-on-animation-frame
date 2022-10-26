@@ -43,7 +43,7 @@ $ npm i use-listen-on-animation-frame
 
 ### Use
 
-Library provides 2 hooks which are `useAnimationFrame`, `useListenOnAnimationFrame`. See [Usage](usage.md), [API](api.md) and [Advanced usage](advanced-usage.md) for more.
+Library provides 2 hooks which are `useAnimationFrame`, `useListenOnAnimationFrame`. See [Usage](./docs/usage.md), [API](./docs/api.md) and [Advanced usage](./docs/advanced-usage.md) for more.
 
 #### Basic
 
