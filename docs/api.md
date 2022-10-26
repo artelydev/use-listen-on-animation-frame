@@ -72,6 +72,8 @@ Returns `[stop, start]` functions.
 
 Function to stop the function from being invoked on every animation frame, and if that was the last function in application still running on animation frame - will effectively `cancelRequestAnimationFrame`.
 
+**Note**, that there is no need to `stop()` on component unmount, this will be done automatically. As well as if it was the last hook in your app - it will cancel a single animation frame loop. Use it only if you explicitly need to `stop()` your listeners & tracking function for some matter.
+
 **You can be assured in it's static reference - no changes between renders, same function**.
 
 <details>
@@ -231,7 +233,7 @@ Function that accepts `listenerId: string` unique uuid from [`[addListener]`](#a
 
 **You can be assured in it's static reference - no changes between renders, same function**
 
-**NOTE!** There is no need to removeListener as a cleanup for a component. Whole listener tree will be destroyed when component will be unmounted. Use it only when you explicitly need to remove your side effect for some matter, or if you add your listener conditionally, and want it to be conditionally removed.
+**NOTE!** There is no need to `removeListener()` as a cleanup for a component. Whole listener tree will be destroyed when component will be unmounted. Use it only when you explicitly need to remove your side effect for some matter, or if you add your listener conditionally, and want it to be conditionally removed.
 
 <details>
   <summary><b>Example</b></summary>

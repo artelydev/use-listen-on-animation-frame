@@ -12,4 +12,5 @@
 - [Advanced usage](advanced-usage.md)
   - [Previous animation frame return](advanced-usage.md#access-previous-animation-frame-function-return)
   - [Start & stop](advanced-usage.md#start-and-stop-tracking-your-function)
+  - [Optimize your listeners](advanced-usage.md#optimizeunoptimize-your-listeners)
 - [Q&A](qa.md)

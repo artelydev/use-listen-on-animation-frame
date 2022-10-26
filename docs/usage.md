@@ -60,8 +60,8 @@ const AnimationFrameCounter: React.FC = () => {
 [Btw, compare it to relying on `timeupdate` event](https://codesandbox.io/s/hooks-vs-timeupdate-g6zqgl)
 
 ```tsx
-import React, { useCallback, useEffect, useState, useRef } from "react";
-import { useListenOnAnimationFrame } from "use-listen-on-animation-frame";
+import React, { useCallback, useState, useRef } from "react";
+import { useAnimationFrame } from "use-listen-on-animation-frame";
 
 const VideoWithCurrentTime: React.FC = () => {
   const [videoCurrentTime, setVideoCurrentTime] = useState<number>(0);
@@ -69,19 +69,13 @@ const VideoWithCurrentTime: React.FC = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
 
   /* better memoized */
-  const getVideoTime = useCallback(() => {
+  const syncVideoCurrentTime = useCallback(() => {
     if (videoRef.current) {
-      return videoRef.current.currentTime;
+      setVideoCurrentTime(videoRef.current.currentTime);
     }
   }, []);
 
-  const [addListener] = useListenOnAnimationFrame(getVideoTime);
-
-  useEffect(() => {
-    const listenerId = addListener((currentTime) => {
-      setVideoCurrentTime(currentTime);
-    });
-  }, [addListener]);
+  useAnimationFrame(syncVideoCurrentTime);
 
   return (
     <>
@@ -103,11 +97,11 @@ const VideoWithCurrentTime: React.FC = () => {
 
 If you need to track your function return on every animation frame and do something with it - go for it!
 
+**Note** that we use `useListenOnAnimationFrame` instead, as we have multiple side effects to the function we want to track.
+
 [Try it on codesandbox](https://codesandbox.io/s/evening-hours-indicator-pwp3wv)
 
 ```tsx
-import "./styles.css";
-
 import React, { useCallback, useEffect, useState } from "react";
 import { useListenOnAnimationFrame } from "use-listen-on-animation-frame";
 

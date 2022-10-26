@@ -10,7 +10,7 @@ If you for some reason need previous animation frame return of your function - i
 import React, { useEffect, useState } from "react";
 import { useListenOnAnimationFrame } from "use-listen-on-animation-frame";
 
-const getMsElapsedFrom1970 = (previousFrameTimeElapsed) => {
+const getMsElapsedFrom1970 = (previousFrameTimeElapsed?: number) => {
   if (previousFrameTimeElapsed) {
     console.log(
       "you wouldn't want to do it here but",
@@ -57,15 +57,11 @@ You can stop and start tracking again whenever you want.
 <em>[Btw, compare the above performance with `setInterval`. You couldn't achieve same smoothness when event loop is busy](https://codesandbox.io/s/interval-vs-animation-frame-065es8)</em>
 
 ```tsx
-import React, { useEffect, useState } from "react";
-import { useListenOnAnimationFrame } from "use-listen-on-animation-frame";
+import React, { useCallback, useEffect, useState } from "react";
+import { useAnimationFrame } from "use-listen-on-animation-frame";
 
 const formatDate = (date: Date) => {
   return `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}.${date.getMilliseconds()}`;
-};
-
-const getDate = () => {
-  return new Date();
 };
 
 export const ExtremelySmoothTimer: React.FC = () => {
@@ -74,19 +70,17 @@ export const ExtremelySmoothTimer: React.FC = () => {
   );
   const [isTicking, setIsTicking] = useState(true);
 
-  const [addListener, , stop, start] = useListenOnAnimationFrame(getDate, {
+  const syncDate = useCallback(() => {
+    setCurrentTime(formatDate(new Date()));
+  }, []);
+
+  const [stop, start] = useAnimationFrame(syncDate, {
     /**
      * optionally indicate that the getDate function and
      * listeners should not be invoked until you `start()`
      */
     autoStart: false,
   });
-
-  useEffect(() => {
-    addListener((date) => {
-      setCurrentTime(formatDate(date));
-    });
-  }, [addListener]);
 
   useEffect(() => {
     if (isTicking) {
@@ -184,7 +178,7 @@ const VideoWithCurrentTime: React.FC = () => {
 
   useEffect(() => {
     addNotOptimizedListener((currentTime) => {
-      setVideoCurrentTime(currentTime);
+      setVideoCurrentTime(currentTime ?? 0);
     });
   }, [addNotOptimizedListener]);
 
@@ -192,7 +186,7 @@ const VideoWithCurrentTime: React.FC = () => {
     addOptimizedListener(() => {
       /**
        * does something heavy only when video current time
-       * is between 1 and 2 seconds
+       * is between 2 and 3 seconds
        */
       for (let i = 0; i < 1000; i++) {
         console.log(":)");
