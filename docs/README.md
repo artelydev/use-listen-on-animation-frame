@@ -27,16 +27,14 @@ Run function on every animation frame
 import React, { useCallback, useState } from "react";
 import { useAnimationFrame } from "use-listen-on-animation-frame";
 
-const getDate = () => new Date();
-
 const Component = () => {
-  const [date, setDate] = useState(getDate());
+  const [date, setDate] = useState(new Date());
 
-  const setDateOnAnimationFrame = useCallback(() => {
-    setDate(getDate());
+  const syncDate = useCallback(() => {
+    setDate(new Date());
   }, []);
 
-  useAnimationFrame(setDateOnAnimationFrame);
+  useAnimationFrame(syncDate);
 
   return <div>{date}</div>;
 };
