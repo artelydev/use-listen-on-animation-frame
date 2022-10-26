@@ -124,7 +124,7 @@ export const ExtremelySmoothTimer: React.FC = () => {
 
 ## Optimize/Unoptimize your listeners
 
-By default, if you don't provide [`shouldInvokeListeners` option](#optionsshouldinvokelisteners) - listeners will be invoked only if tracked function return changes. It means that a supplied function will still be invoked on every animation frame, but listeners will not.
+By default, if you don't provide [`shouldInvokeListeners` option](api.md#optionsshouldinvokelisteners) - listeners will be invoked only if tracked function return changes. It means that a supplied function will still be invoked on every animation frame, but listeners will not.
 
 [Try it on codesandbox](https://codesandbox.io/s/player-timer-heavy-load-yqz79q)
 
