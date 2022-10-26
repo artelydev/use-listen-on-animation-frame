@@ -1,3 +1,10 @@
+## [2.2.1](https://github.com/artelydev/use-listen-on-animation-frame/compare/v2.2.0...v2.2.1) (2022-10-26)
+
+
+### Bug Fixes
+
+* **readme:** add missing website docs link ([a263da9](https://github.com/artelydev/use-listen-on-animation-frame/commit/a263da98f61f7a487cb9dcd9bb17049feaf0e314))
+
 # [2.2.0](https://github.com/artelydev/use-listen-on-animation-frame/compare/v2.1.2...v2.2.0) (2022-10-25)
 
 
