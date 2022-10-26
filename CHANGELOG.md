@@ -1,3 +1,10 @@
+# [2.3.0](https://github.com/artelydev/use-listen-on-animation-frame/compare/v2.2.2...v2.3.0) (2022-10-26)
+
+
+### Features
+
+* **npm:** better keywords ([753a2d1](https://github.com/artelydev/use-listen-on-animation-frame/commit/753a2d1dd3aa11e88cd7374ccca812a6a60fd8d2))
+
 ## [2.2.2](https://github.com/artelydev/use-listen-on-animation-frame/compare/v2.2.1...v2.2.2) (2022-10-26)
 
 
