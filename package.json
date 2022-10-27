@@ -73,7 +73,7 @@
     "@semantic-release/release-notes-generator": "10.0.3",
     "@testing-library/react": "13.4.0",
     "@types/jest": "29.2.0",
-    "@types/react": "18.0.23",
+    "@types/react": "18.0.24",
     "@types/uuid": "8.3.4",
     "commitizen": "4.2.5",
     "eslint": "8.26.0",
