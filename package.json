@@ -75,7 +75,7 @@
     "@types/jest": "29.2.3",
     "@types/react": "18.0.25",
     "@types/uuid": "8.3.4",
-    "commitizen": "4.2.5",
+    "commitizen": "4.3.0",
     "eslint": "8.28.0",
     "eslint-config-airbnb-typescript-prettier": "5.0.0",
     "husky": "8.0.2",
